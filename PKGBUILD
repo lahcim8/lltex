@@ -5,8 +5,7 @@ pkgdesc='A leightweight LuaTeX distribution'
 arch=('x86_64')
 url='https://gitlab.com/lahcim8/lltex'
 _ctan="http://mirrors.ctan.org"
-_texlive="svn://tug.org/texlive"
-source=("git+https://github.com/TeX-Live/luatex#branch=tags/1.12.0" # luatex binary source
+source=("git+https://github.com/TeX-Live/luatex#branch=tags/1.12.0" # luatex source code
 
         "git+https://github.com/hyphenation/tex-hyphen#tag=CTAN-2020.03.25" # hyph-utf8, etex.src
         "$_ctan/obsolete/systems/e-tex/v2/src/etexdefs.lib" # etexdefs.lib
@@ -23,19 +22,20 @@ source=("git+https://github.com/TeX-Live/luatex#branch=tags/1.12.0" # luatex bin
         "$_ctan/fonts/ps-type1/cm-super.zip" # ecso, ecsx .pfb files
         "$_ctan/macros/cstex/base/cmexb.tar.gz" # cmexb font
 
-        "$_ctan/install/macros/luatex/generic/lualibs.tds.zip" # lualibs
-        "$_ctan/install/macros/latex/latex-base.tds.zip" # ltluatex
+        "$_ctan/macros/luatex/generic/lualibs.zip" # lualibs
+        "$_ctan/macros/latex/base.zip" # ltluatex + docstrip
+        "$_ctan/macros/latex/contrib/l3kernel.zip" # l3docstrip
         "$_ctan/macros/luatex/generic/luaotfload.zip" # luaotfload
-        "$_ctan/install/macros/luatex/generic/luamplib.tds.zip" # luamplib
+        "$_ctan/macros/luatex/generic/luamplib.zip" # luamplib
 
         # metapost base files
         # "https://ctan.org/tex-archive/obsolete/graphics/metapost/base/texmf/metapost/base/"
-        "$_texlive/trunk/Master/texmf-dist/metapost/base/"
+        "svn+https://serveur-svn.lri.fr/svn/modhel/metapost/trunk/texmf/metapost/base"
 
         "$_ctan/macros/generic/tex-ini-files.zip" # luatex.ini, etc
 
         "$_ctan/macros/luatex/optex.zip" # optex
-        "$_texlive/trunk/Master/texmf-dist/tex/latex/lipsum" # optex needs lipsum.ltd.tex
+        "$_ctan/macros/latex/contrib/lipsum.zip" # optex needs lipsum.ltd.tex
 
         "texmf.cnf" # custom kpathsea config file
         "pdftex.map" # mapping of used type1 fonts
@@ -57,14 +57,15 @@ sha256sums=('SKIP'
             'd57d16ff8b438fad7212a822a394e099b427d1fb8434fd1f78decb09a4c84aaa'
             'f3f856a5006ae7d2bbc2d9a338ca5ae25b6fba19eebee3ba20892845aafa7987'
             '33f462ecbb4688a5015a7cd507918e96ab933059c9a40fb875a11819596f68d1'
-            '97c26abffc21163549a83bafd7edfea019aeb32959572bf307e2cecc75ee9366'
-            'e49b9d1c12c5152202bd279e9e5a21c47cd686a68c16b29cfae9aa8e15e134c3'
+            '6ad2cc39615dc090436e948e8a5c75adaedc422f30d62b2098d4f51d95cad097'
+            'e4dfb17b355d8b7e653e9139ce7f65480e309b95fb2c04714df24d146c380a55'
+            '805e67eec4531bcec8b8ff2446a42f2066ac441bb2cebb47ed1757cf3ff1955f'
             'a599f5fa74fc3b68db2209da55d5232738751faf83e8cfc7e04a5278f9789104'
-            '9d89f3532e45831f9f1c4233deaa4ec566f14556ede10e34fc4cf6299ddd6a31'
+            '670c803c98eca5784e3cbba195d2b9ecef12b2ae1cd8f74b2e5e6408aa679c6a'
             'SKIP'
             'f0d1846073e7c8043750461af379a81e6498ebd38968f3fc5a8a996c61054fec'
             'd616171229a90dcfbf702177537105241813f0bf2cbbc3c0d7da4476a65a74bb'
-            'SKIP'
+            'c96aa4aa52a922ed7337794eb95093ae0726a825e430d870a4371fad3d479137'
             '2cabf75033450e45dc2fe5bbb1a3d30eb4c4d04acdf5d854fdeca0f90460ea62'
             'b8b107aae1eb98c0708f79dc72ffd6b78e33ffe9f0574ff661bc2857ed0f80d1'
             '9340df8c64b917773d2da54e7a24f5b0e9418834326c0df7b851e945859cbef3'
@@ -91,13 +92,27 @@ package() {
     install -Dm755 luatex/build/texk/web2c/luatex "$pkgdir/usr/bin/luatex"
     PATH="$pkgdir/usr/bin:$PATH"
 
+    # generate lipsum.ltd.tex (needs docstrip and l3docstrip)
+    env TEXMFDOTDIR=.:base luatex docstrip.ins # create docstrip.tex
+    env TEXMFDOTDIR=.:l3kernel luatex l3.ins # create l3docstrip.tex
+    env TEXMFDOTDIR=.:lipsum luatex lipsum.ins # create lipsum.ltd.tex
+
+    # generate ltluatex.{lua,tex}
+    env TEXMFDOTDIR=.:base luatex format.ins
+
+    # generate luamplib.{sty.lua}
+    env TEXMFDOTDIR=.:luamplib luatex luamplib.dtx
+
+    # generate some lualibs files
+    env TEXMFDOTDIR=.:lualibs luatex lualibs.dtx
+
     # install luatex packages needed by both plain luatex and optex
     install -Dm644 tex-hyphen/hyph-utf8/tex/generic/hyph-utf8/patterns/txt/* -t "$texmf/tex/hyph-utf8"
     install -Dm644 unicode-data/{CaseFolding.txt,load-unicode-data.tex,PropList.txt,ScriptExtensions.txt,Scripts.txt,UnicodeData.txt} -t "$texmf/tex/unicode-data"
-    install -Dm644 tex/luatex/lualibs/*.lua -t "$texmf/tex/lualibs"
-    install -Dm644 tex/latex/base/ltluatex.{lua,tex} -t "$texmf/tex/latex"
+    install -Dm644 {.,lualibs}/lualibs*.lua -t "$texmf/tex/lualibs"
+    install -Dm644 ltluatex.{lua,tex} -t "$texmf/tex/latex"
     install -Dm644 luaotfload/*.{lua,sty} -t "$texmf/tex/luaotfload"
-    install -Dm644 tex/luatex/luamplib/*.{lua,sty} -t "$texmf/tex/luamplib"
+    install -Dm644 luamplib.{lua,sty} -t "$texmf/tex/luamplib"
     install -Dm644 base/*.mp -t "$texmf/metapost"
     install -Dm644 tex-hyphen/hyph-utf8/tex/luatex/hyph-utf8/luatex-hyphen.lua -t "$texmf/tex/hyph-utf8"
 
@@ -120,20 +135,20 @@ package() {
     rm -f tfm/manfnt.tfm
     # delete comments and empty lines from .map file, prepare .tfm, .pfb file names
     sed -e 's/%.*//' -e '/^$/d' pdftex.map > pdftex.map.tmp
-    awk '{printf "%s.tfm\n", $1}' pdftex.map.tmp > tfm_files
-    awk -F'[[:blank:]]|<' '{print $NF}' pdftex.map.tmp > pfb_files
+    awk '{print "/" $1 ".tfm$"}' pdftex.map.tmp > tfm_files
+    awk -F'[[:blank:]]|<' '{print "/" $NF "$"}' pdftex.map.tmp > pfb_files
     # find all possible font files
     find -type f -regex '.*\.\(tfm\|pfb\)$' > available_files
     # install only needed font files
-    grep -Ff tfm_files available_files | xargs install -Dm644 -t "$texmf/fonts/tfm"
-    grep -Ff pfb_files available_files | xargs install -Dm644 -t "$texmf/fonts/type1"
+    grep -f tfm_files available_files | xargs install -Dm644 -t "$texmf/fonts/tfm"
+    grep -f pfb_files available_files | xargs install -Dm644 -t "$texmf/fonts/type1"
 
     # need etex.src from depths of hyph-utf8
     cp tex-hyphen/hyph-utf8/tex/luatex/hyph-utf8/etex.src .
 
     # install optex files
     install -Dm644 optex/{base,pkg}/*.opm -t "$texmf/tex/optex"
-    install -Dm644 lipsum/lipsum.ltd.tex -t "$texmf/tex/lipsum"
+    install -Dm644 lipsum.ltd.tex -t "$texmf/tex/lipsum"
 
     # run iniluatex to create format files
     env TEXMFDOTDIR=".:tex-ini-files:lib" luatex -ini tex-ini-files/luatex.ini

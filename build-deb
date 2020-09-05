@@ -45,7 +45,7 @@ else
 				git clone --depth=1 --branch="$ref" -c advice.detachedHead=false "$url" "$dir"
 			fi
 		;;
-		svn://*)
+		svn+*)
 			svn checkout "$src"
 		;;
 		http://*|https://*)
