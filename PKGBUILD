@@ -96,18 +96,18 @@ package() {
     PATH="$pkgdir/usr/bin:$PATH"
 
     # generate lipsum.ltd.tex (needs docstrip and l3docstrip)
-    env TEXMFDOTDIR=.:base luatex docstrip.ins # create docstrip.tex
-    env TEXMFDOTDIR=.:l3kernel luatex l3.ins # create l3docstrip.tex
-    env TEXMFDOTDIR=.:lipsum luatex lipsum.ins # create lipsum.ltd.tex
+    env TEXMFDOTDIR=.:base luatex -ini docstrip.ins # create docstrip.tex
+    env TEXMFDOTDIR=.:l3kernel luatex -ini l3.ins # create l3docstrip.tex
+    env TEXMFDOTDIR=.:lipsum luatex -ini '\let\obeyspaces=\relax \input lipsum.ins'
 
     # generate ltluatex.{lua,tex}
-    env TEXMFDOTDIR=.:base luatex format.ins
+    env TEXMFDOTDIR=.:base luatex -ini format.ins
 
     # generate luamplib.{sty.lua}
-    env TEXMFDOTDIR=.:luamplib luatex luamplib.dtx
+    env TEXMFDOTDIR=.:luamplib luatex -ini '\catcode`\{=1 \catcode`\}=2 \let\obeyspaces\relax \input luamplib.dtx'
 
     # generate some lualibs files
-    env TEXMFDOTDIR=.:lualibs luatex lualibs.dtx
+    env TEXMFDOTDIR=.:lualibs luatex -ini '\catcode`\{=1 \catcode`\}=2 \let\obeyspaces\relax \input lualibs.dtx'
 
     # install luatex packages needed by both plain luatex and optex
     install -Dm644 tex-hyphen/hyph-utf8/tex/generic/hyph-utf8/patterns/txt/* -t "$texmf/tex/hyph-utf8"
