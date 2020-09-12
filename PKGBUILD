@@ -5,9 +5,11 @@ pkgdesc='A leightweight LuaTeX distribution'
 arch=('x86_64')
 url='https://gitlab.com/lahcim8/lltex'
 _ctan="http://mirrors.ctan.org"
-source=("git+https://github.com/TeX-Live/luatex#branch=tags/1.12.0" # luatex source code
+_texlive="svn://tug.org/texlive"
+_github="git+https://github.com"
+source=("$_github/TeX-Live/luatex#branch=tags/1.12.0" # luatex source code
 
-        "git+https://github.com/hyphenation/tex-hyphen#tag=CTAN-2020.03.25" # hyph-utf8, etex.src
+        "$_github/hyphenation/tex-hyphen#tag=CTAN-2020.03.25" # hyph-utf8, etex.src
         "$_ctan/obsolete/systems/e-tex/v2/src/etexdefs.lib" # etexdefs.lib
         "$_ctan/macros/generic/unicode-data.zip" # unicode-data
 
@@ -30,7 +32,8 @@ source=("git+https://github.com/TeX-Live/luatex#branch=tags/1.12.0" # luatex sou
 
         # metapost base files
         # "https://ctan.org/tex-archive/obsolete/graphics/metapost/base/texmf/metapost/base/"
-        "svn+https://serveur-svn.lri.fr/svn/modhel/metapost/trunk/texmf/metapost/base"
+        # "svn+https://serveur-svn.lri.fr/svn/modhel/metapost/trunk/texmf/metapost/base"
+        "$_texlive/trunk/Master/texmf-dist/metapost/base/"
 
         "$_ctan/macros/generic/tex-ini-files.zip" # luatex.ini, etc
 
