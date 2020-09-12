@@ -19,7 +19,6 @@ _TEXMFMAIN = $SELFAUTODIR/share/lltex
 
 % these are used by programs
 TEXMFVAR  = $XDG_CACHE_HOME/lltex                % used as cache e.g. by luaotfload
-OSFONTDIR = {$XDG_DATA_HOME,$OS_DATA_DIR}/fonts  % used by luaotfload for searching files
 
 % all used texmf trees are in this variable
 TEXMF = {$_TEXMFMAIN,$TEXMFUSER,$TEXMFSYSTEM}
@@ -36,5 +35,5 @@ TEXFONTMAPS   = $TEXMFDOTDIR;$TEXMF/fonts/map//
 TFMFONTS      = $TEXMFDOTDIR;$TEXMF/fonts/tfm//
 T1FONTS       = $TEXMFDOTDIR;$TEXMF/fonts/type1//
 ENCFONTS      = $TEXMFDOTDIR;$TEXMF/fonts/enc//
-TTFFONTS      = $TEXMFDOTDIR;$TEXMF/fonts/truetype//;$OSFONTDIR//
-OPENTYPEFONTS = $TEXMFDOTDIR;$TEXMF/fonts/opentype//;$OSFONTDIR//
+TTFFONTS      = $TEXMFDOTDIR;$TEXMF/fonts/truetype//
+OPENTYPEFONTS = $TEXMFDOTDIR;$TEXMF/fonts/opentype//
