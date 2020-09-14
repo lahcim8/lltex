@@ -38,8 +38,9 @@ while read -r src _; do
 		fi
 	;;
 	svn*)
+		src=${src##svn+}
 		echo "Getting subversion repository '$src'.."
-		svn checkout "$src"
+		svn checkout --username anonsvn --password anonsvn "$src"
 	;;
 	http://*|https://*)
 		echo "Getting remote source '$src'.."
@@ -78,7 +79,7 @@ rm -rf "$pkgdir"
 mkdir -p "$pkgdir"
 
 echo "Running build script.."
-(cd "$srcdir"; "$basedir/build" "$pkgdir" "$pkgver")
+(cd "$srcdir"; "$basedir/build" "$pkgdir" "$pkgname" "$pkgver")
 
 debian_package() {
 	echo "Creating Debian package."
@@ -119,6 +120,7 @@ arch_package() {
 	BUILDFILE=/dev/null
 
 	sed -n '1,/# PROGRAM START/ p' /usr/bin/makepkg > mkpkg
+	trap 'rm -f mkpkg' EXIT
 	source mkpkg
 
 	load_makepkg_config

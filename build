@@ -2,10 +2,10 @@
 
 set -e
 
-pkgname=lltex
 pkgdir=$1
-# not used argument
-# pkgver=$2
+pkgname=$2
+# not used
+#pkgver=$3
 
 srcdir=$(readlink -f .)
 
@@ -16,9 +16,13 @@ install_exec() {
 	command install -Dm755 "$@"
 }
 
-cd luatex/source/texk/kpathsea
-# set our own TEXMFCNF value
-sed -i '1i TEXMFCNF={$XDG_CONFIG_HOME,~/.config,/etc}/lltex:$SELFAUTODIR/share/lltex/web2c' texmf.cnf
+# patch missing include in web2c
+sed -i '6i #include <w2c/config.h>' web2c/lib/lib.h
+
+# set our own TEXMFCNF value, using $pkgname
+sed -i "1i #define DEFAULT_TEXMFCNF \"{\$XDG_CONFIG_HOME,~/.config,/etc}/$pkgname:\$SELFAUTODIR/share/$pkgname/web2c\"" include/kpathsea/paths.h
+
+cd kpathsea
 
 # compile kpathsea to a static library as it is used twice
 $CC -c $CPPFLAGS $CFLAGS \
@@ -78,12 +82,8 @@ $CC -c $CPPFLAGS $CFLAGS \
 		xstrdup.c
 ar rcs "$srcdir/libkpathsea.a" ./*.o
 
-# patch missing include in web2c
-cd ../web2c
-sed -i '6i #include <w2c/config.h>' lib/lib.h
-
 # compile `ctangle`, which is needed for mplib
-cd cwebdir
+cd ../web2c/cwebdir
 $CC -w ctangle.c common.c -o bootstrap
 ./bootstrap ctangle ctang-w2c real-ctangle.c
 ./bootstrap common comm-w2c real-common.c
@@ -108,7 +108,7 @@ $CC -o luatex \
 	-DLUA_USE_POSIX -DLUA_USE_DLOPEN -DLUA_FF_LIB -D_NO_PYTHON \
 	-DX_DISPLAY_MISSING -DUSE_OUR_MEMORY \
 	-DSYNCTEX_ENGINE_H='<synctex-luatex.h>' \
-	-I ../../../libs/lua53/lua53-src/src/ -I luapplib/src/util/ \
+	-I ../../lua53-src/src/ -I luapplib/src/util/ \
 	-I luapplib/src/ -I unilib/ -I ../w2c/ -I ../../ -I ../ -I ./ \
 	-I luafontloader/fontforge/inc/ \
 	-I luafontloader/fontforge/fontforge/ -I ../libmd5/ \
@@ -315,39 +315,39 @@ $CC -o luatex \
 		luaffi/parser.c \
 		luatex.c \
 		../mplibdir/lmplib.c \
-		../../../libs/lua53/lua53-src/src/lapi.c \
-		../../../libs/lua53/lua53-src/src/lauxlib.c \
-		../../../libs/lua53/lua53-src/src/lbaselib.c \
-		../../../libs/lua53/lua53-src/src/lbitlib.c \
-		../../../libs/lua53/lua53-src/src/lcode.c \
-		../../../libs/lua53/lua53-src/src/lcorolib.c \
-		../../../libs/lua53/lua53-src/src/lctype.c \
-		../../../libs/lua53/lua53-src/src/ldblib.c \
-		../../../libs/lua53/lua53-src/src/ldebug.c \
-		../../../libs/lua53/lua53-src/src/ldo.c \
-		../../../libs/lua53/lua53-src/src/ldump.c \
-		../../../libs/lua53/lua53-src/src/lfunc.c \
-		../../../libs/lua53/lua53-src/src/lgc.c \
-		../../../libs/lua53/lua53-src/src/linit.c \
-		../../../libs/lua53/lua53-src/src/liolib.c \
-		../../../libs/lua53/lua53-src/src/llex.c \
-		../../../libs/lua53/lua53-src/src/lmathlib.c \
-		../../../libs/lua53/lua53-src/src/lmem.c \
-		../../../libs/lua53/lua53-src/src/loadlib.c \
-		../../../libs/lua53/lua53-src/src/lobject.c \
-		../../../libs/lua53/lua53-src/src/lopcodes.c \
-		../../../libs/lua53/lua53-src/src/loslib.c \
-		../../../libs/lua53/lua53-src/src/lparser.c \
-		../../../libs/lua53/lua53-src/src/lstate.c \
-		../../../libs/lua53/lua53-src/src/lstring.c \
-		../../../libs/lua53/lua53-src/src/lstrlib.c \
-		../../../libs/lua53/lua53-src/src/ltable.c \
-		../../../libs/lua53/lua53-src/src/ltablib.c \
-		../../../libs/lua53/lua53-src/src/ltm.c \
-		../../../libs/lua53/lua53-src/src/lundump.c \
-		../../../libs/lua53/lua53-src/src/lutf8lib.c \
-		../../../libs/lua53/lua53-src/src/lvm.c \
-		../../../libs/lua53/lua53-src/src/lzio.c \
+		../../lua53-src/src/lapi.c \
+		../../lua53-src/src/lauxlib.c \
+		../../lua53-src/src/lbaselib.c \
+		../../lua53-src/src/lbitlib.c \
+		../../lua53-src/src/lcode.c \
+		../../lua53-src/src/lcorolib.c \
+		../../lua53-src/src/lctype.c \
+		../../lua53-src/src/ldblib.c \
+		../../lua53-src/src/ldebug.c \
+		../../lua53-src/src/ldo.c \
+		../../lua53-src/src/ldump.c \
+		../../lua53-src/src/lfunc.c \
+		../../lua53-src/src/lgc.c \
+		../../lua53-src/src/linit.c \
+		../../lua53-src/src/liolib.c \
+		../../lua53-src/src/llex.c \
+		../../lua53-src/src/lmathlib.c \
+		../../lua53-src/src/lmem.c \
+		../../lua53-src/src/loadlib.c \
+		../../lua53-src/src/lobject.c \
+		../../lua53-src/src/lopcodes.c \
+		../../lua53-src/src/loslib.c \
+		../../lua53-src/src/lparser.c \
+		../../lua53-src/src/lstate.c \
+		../../lua53-src/src/lstring.c \
+		../../lua53-src/src/lstrlib.c \
+		../../lua53-src/src/ltable.c \
+		../../lua53-src/src/ltablib.c \
+		../../lua53-src/src/ltm.c \
+		../../lua53-src/src/lundump.c \
+		../../lua53-src/src/lutf8lib.c \
+		../../lua53-src/src/lvm.c \
+		../../lua53-src/src/lzio.c \
 		../mplibdir/tfmin.c \
 		../mplibdir/mp.c \
 		../mplibdir/mpmath.c \
@@ -405,10 +405,10 @@ cd "$srcdir"
 
 texmf="$pkgdir/usr/share/$pkgname"
 export TEXMF="$texmf"
-export TEXMFCNF=.
+export TEXMFCNF="$srcdir"
 
 # first install luatex binary as we will need it later and add it to PATH
-install_exec luatex/source/texk/web2c/luatexdir/luatex "$pkgdir/usr/bin/luatex"
+install_exec web2c/luatexdir/luatex "$pkgdir/usr/bin/luatex"
 PATH="$pkgdir/usr/bin:$PATH"
 
 # generate lipsum.ltd.tex (needs docstrip and l3docstrip)
@@ -444,7 +444,7 @@ install cm-super/dvips/cm-super-t1.enc -t "$texmf/fonts/enc"
 awk -f extract-language-data.awk tex-hyphen/TL/tlpkg/tlpsrc/*.tlpsrc
 # language.dat.lua is needed at run time, language.def is needed only by
 # etex.src at luatex plain format creation
-install language.dat.lua -t "$texmf/tex/lltex"
+install language.dat.lua -t "$texmf/tex/$pkgname"
 
 # generate rsfs*.tfm files
 TEXMFDOTDIR=".:rsfs" luatex --luaonly mfplain.lua rsfs5 rsfs7 rsfs10

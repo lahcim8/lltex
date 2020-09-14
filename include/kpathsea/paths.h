@@ -6,7 +6,6 @@
 #define DEFAULT_MFBASES       "/none"
 #define DEFAULT_BIBINPUTS     "/none"
 #define DEFAULT_BSTINPUTS     "/none"
-#define DEFAULT_TEXMFCNF      "/none"
 #define DEFAULT_TEXMFDBS      "/none"
 #define DEFAULT_TEXFORMATS    "/none"
 #define DEFAULT_TEXFONTMAPS   "/none"
