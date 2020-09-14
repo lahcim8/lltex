@@ -1,0 +1,7 @@
+doc/*.pdf
+doc/*.log
+src
+pkg
+lltex*.deb
+lltex*.pkg.*
+lltex*.tar.gz

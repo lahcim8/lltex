@@ -1,0 +1,149 @@
+#!/bin/sh
+
+set -e
+
+# This script read information from PKGBUILD and builds a .deb package.
+# Dependencies: git, svn, curl, unzip, fakeroot, dpkg-deb
+
+# Michal Vlasák, 2020. Public domain.
+
+pkgname=lltex
+pkgver=0.1.1
+pkgdesc='A leightweight LuaTeX distribution'
+debian_arch=amd64
+arch_arch=x86_64
+url='https://gitlab.com/lahcim8/lltex'
+
+basedir=$(readlink -f .)
+pkgdir=$(readlink -f pkg)
+srcdir=$(readlink -f src)
+
+echo "Getting sources.."
+mkdir -p "$srcdir"
+cd "$srcdir"
+while read -r src _; do
+	case "$src" in
+	\#*|'')
+		# comment or empty line
+	;;
+	git+*)
+		echo "Getting git repository '$src'.."
+		url=${src##git+}
+		ref=${url##*=}
+		url=${url%[#@]*}
+		dir=${url##*/}
+
+		if [ ! -d "$dir" ]; then
+			git clone --depth=1 --branch="$ref" -c advice.detachedHead=false "$url" "$dir"
+		fi
+	;;
+	svn*)
+		echo "Getting subversion repository '$src'.."
+		svn checkout "$src"
+	;;
+	http://*|https://*)
+		echo "Getting remote source '$src'.."
+		dest=${src##*/}
+		if [ ! -f "$dest" ]; then
+			curl -fLo "$dest" "$src"
+		fi
+
+		case "$dest" in
+		*.zip)
+			unzip -uo "$dest" ;;
+		*.tar*)
+			tar -xf "$dest" ;;
+		esac
+	;;
+	*)
+		echo "Getting local source '$src'.."
+		cp -rf "../$src" .
+	esac
+done < "$basedir/sources"
+cd "$basedir"
+
+# export compilation variables, fallback to some defaults
+export CC CXX LD CPPFLAGS CFLAGS CXXFLAGS LDFLAGS MAKEFLAGS
+: "${CC:="gcc"}"
+: "${CXX:="$CC"}"
+: "${LD:="$CC"}"
+: "${CPPFLAGS:="-D_FORTIFY_SOURCE=2"}"
+: "${CFLAGS:="-march=native -O2 -pipe -fno-plt"}"
+: "${CXXFLAGS:="${CFLAGS}"}"
+: "${LDFLAGS:="-Wl,-O1,--sort-common,--as-needed,-z,relro,-z,now"}"
+: "${MAKEFLAGS:="-j$(nproc)"}"
+
+# ensure clean pkgdir
+rm -rf "$pkgdir"
+mkdir -p "$pkgdir"
+
+echo "Running build script.."
+(cd "$srcdir"; "$basedir/build" "$pkgdir" "$pkgver")
+
+debian_package() {
+	echo "Creating Debian package."
+
+	# uses `dpkg-deb` to create .deb from a pkg directory
+
+	mkdir -p "$pkgdir/DEBIAN"
+	cat > "$pkgdir/DEBIAN/control" <<- EOF
+	Package: $pkgname
+	Version: $pkgver
+	Section: user/hidden
+	Priority: optional
+	Architecture: $debian_arch
+	Maintainer: Michal Vlasák <lahcim8@gmail.com>
+	Description: $pkgdesc
+	EOF
+
+	dpkg-deb --root-owner-group -b "$pkgdir" "${pkgname}_${pkgver}_${debian_arch}.deb"
+	rm -rf "$pkgdir/DEBIAN"
+}
+
+arch_package() {
+	echo "Creating Arch linux package."
+
+	# uses `makepkg`'s functions to create .pkg.tar.* from a pkg directory
+
+	# create package in fakeroot to ensure correct permissions
+	fakeroot -- bash <<- EOF
+	pkgname=$pkgname
+	pkdir=$pkgdir
+	arch=$arch_arch
+	pkgdir=$pkgdir
+	pkgrel=1
+	pkgbase=$pkgname
+	pkgver=$pkgver
+	PKGDEST=$(readlink -f .)
+	PACMAN_PATH=\$(type -P pacman)
+	BUILDFILE=/dev/null
+
+	sed -n '1,/# PROGRAM START/ p' /usr/bin/makepkg > mkpkg
+	source mkpkg
+
+	load_makepkg_config
+	create_package
+	EOF
+	rm -f "$pkgdir/.PKGINFO" "$pkgdir/.BUILDINFO" "$pkgdir/.MTREE"
+}
+
+tar_package() {
+	echo "Creating .tar.gz package"
+
+	# uses `makepkg`'s functions to create .pkg.tar.* from a pkg directory
+
+	# tar in fakeroot to ensure correct permissions
+	fakeroot -- tar -caf "${pkgname}-${pkgver}.tar.gz" -C "$pkgdir" .
+}
+
+for arg in "$@"; do
+	case "$arg" in
+	arch) arch_package ;;
+	debian) debian_package ;;
+	tar) tar_package ;;
+	all)
+		arch_package
+		debian_package
+		tar_package
+	esac
+done
