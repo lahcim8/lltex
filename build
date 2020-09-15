@@ -34,6 +34,8 @@ sed -i '/cnf_path = kpathsea_init_format (kpse, kpse_cnf_format);/ a\
   SET_VAR("XDG_CACHE_HOME", "~/.cache");\
   SET_VAR("XDG_DATA_HOME", "~/.local/share");\
   SET_VAR("TEXMFVAR", "$XDG_CACHE_HOME/lltex");\
+  /* Dont warn me if there is no configuration file, as I have builtin values. */\
+  SET_VAR("KPATHSEA_WARNING", "0");\
 \
   SET_VAR("TEXMFDOTDIR", ".");\
   SET_VAR("TEXMFUSER", "$XDG_DATA_HOME/{lltex,texmf}");\
@@ -116,7 +118,7 @@ $CC -o ../mplibdir/ctangle \
 
 # `ctangle` cweb files of mplib
 cd ../mplibdir
-for f in ./*.w; do TEXMFCNF="$srcdir" ./ctangle $f >/dev/null; done
+for f in ./*.w; do ./ctangle $f >/dev/null; done
 
 # build luatex binary
 cd ../luatexdir
@@ -423,8 +425,6 @@ strip --strip-all luatex
 cd "$srcdir"
 
 texmf="$pkgdir/usr/share/$pkgname"
-export TEXMF="$texmf"
-export TEXMFCNF="$srcdir"
 
 # first install luatex binary as we will need it later and add it to PATH
 install_exec web2c/luatexdir/luatex "$pkgdir/usr/bin/luatex"
@@ -444,6 +444,9 @@ TEXMFDOTDIR=.:luamplib luatex -ini '\catcode`\{=1 \catcode`\}=2 \let\obeyspaces\
 # generate some lualibs files
 TEXMFDOTDIR=.:lualibs luatex -ini '\catcode`\{=1 \catcode`\}=2 \let\obeyspaces\relax \input lualibs.dtx'
 
+# patch luaotfload, don't complain if it was already patched (by previous build)
+patch -Np1 < luaotfload.patch || true
+
 # install luatex packages needed by both plain luatex and optex
 install tex-hyphen/hyph-utf8/tex/generic/hyph-utf8/patterns/txt/* -t "$texmf/tex/hyph-utf8"
 (cd unicode-data; install CaseFolding.txt load-unicode-data.tex PropList.txt ScriptExtensions.txt Scripts.txt UnicodeData.txt -t "$texmf/tex/unicode-data")
@@ -453,6 +456,9 @@ install luaotfload/*.lua luaotfload/*.sty -t "$texmf/tex/luaotfload"
 install luamplib.lua luamplib.sty -t "$texmf/tex/luamplib"
 install base/*.mp -t "$texmf/metapost"
 install tex-hyphen/hyph-utf8/tex/luatex/hyph-utf8/luatex-hyphen.lua -t "$texmf/tex/hyph-utf8"
+
+# remove patched file to allow multiple consequent rebuilds without patch complaining
+# rm -f luaotfload/luaotfload-database.lua
 
 # install pdftex.map and needed .enc files
 install pdftex.map -t "$texmf/fonts/map"

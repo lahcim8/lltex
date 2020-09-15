@@ -1,0 +1,17 @@
+--- a/luaotfload/luaotfload-database.lua
++++ b/luaotfload/luaotfload-database.lua
+@@ -2362,10 +2362,10 @@
+         end
+     end
+
+-    fontdirs = kpseexpand_path "$OPENTYPEFONTS"
+-    fontdirs = fontdirs .. path_separator .. kpseexpand_path "$TTFONTS"
+-    fontdirs = fontdirs .. path_separator .. kpseexpand_path "$T1FONTS"
+-    fontdirs = fontdirs .. path_separator .. kpseexpand_path "$AFMFONTS"
++    fontdirs = kpse.show_path "opentype fonts"
++    fontdirs = fontdirs .. path_separator .. kpse.show_path "truetype fonts"
++    fontdirs = fontdirs .. path_separator .. kpse.show_path "type1 fonts"
++    fontdirs = fontdirs .. path_separator .. kpse.show_path "afm"
+
+     if stringis_empty (fontdirs) then
+         return { }
