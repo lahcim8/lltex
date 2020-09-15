@@ -2,17 +2,23 @@
 
 set -e
 
-# This script read information from PKGBUILD and builds a .deb package.
-# Dependencies: git, svn, curl, unzip, fakeroot, dpkg-deb
+# Build dependencies: git, svn, curl, unzip, tar
+# Build and runtime dependencies: zlib, libpng, zziplib
 
-# Michal Vlasák, 2020. Public domain.
+# Dependencies for making Arch package: pacman (makepkg)
+# Dependencies for making .deb package: dpkg-deb
+# Dependencies for making .tar package: fakeroot
 
-pkgname=lltex
+pkgname=mmtex
 pkgver=0.1.1
-pkgdesc='A leightweight LuaTeX distribution'
-debian_arch=amd64
+pkgdesc='A minimal modern (Lua)TeX distribution'
+pkgurl='https://gitlab.com/vlasakm/mmtex'
 arch_arch=x86_64
-url='https://gitlab.com/lahcim8/lltex'
+debian_arch=amd64
+arch_depends="zziplib libpng zlib"
+debian_depends="zlib1g, libpng16-16, zlib1g"
+
+packager="Michal Vlasák <lahcim8@gmail.com>"
 
 basedir=$(readlink -f .)
 pkgdir=$(readlink -f pkg)
@@ -90,10 +96,11 @@ debian_package() {
 	cat > "$pkgdir/DEBIAN/control" <<- EOF
 	Package: $pkgname
 	Version: $pkgver
+	Depends: $debian_depends
 	Section: user/hidden
 	Priority: optional
 	Architecture: $debian_arch
-	Maintainer: Michal Vlasák <lahcim8@gmail.com>
+	Maintainer: $packager
 	Description: $pkgdesc
 	EOF
 
@@ -108,14 +115,18 @@ arch_package() {
 
 	# create package in fakeroot to ensure correct permissions
 	fakeroot -- bash <<- EOF
-	pkgname=$pkgname
-	pkdir=$pkgdir
-	arch=$arch_arch
-	pkgdir=$pkgdir
+	pkgname="$pkgname"
+	url="$pkgurl"
+	pkdir="$pkgdir"
+	arch=("$arch_arch")
+	pkgdir="$pkgdir"
 	pkgrel=1
-	pkgbase=$pkgname
-	pkgver=$pkgver
-	PKGDEST=$(readlink -f .)
+	pkgbase="$pkgname"
+	pkgver="$pkgver"
+	pkgdesc="$pkgdesc"
+	depends=($arch_depends)
+	PACKAGER="$packger"
+	PKGDEST="$(readlink -f .)"
 	PACMAN_PATH=\$(type -P pacman)
 	BUILDFILE=/dev/null
 
@@ -132,10 +143,8 @@ arch_package() {
 tar_package() {
 	echo "Creating .tar.gz package"
 
-	# uses `makepkg`'s functions to create .pkg.tar.* from a pkg directory
-
-	# tar in fakeroot to ensure correct permissions
-	fakeroot -- tar -caf "${pkgname}-${pkgver}.tar.gz" -C "$pkgdir" .
+	# tar in fakeroot to ensure correct permissions, strip `/usr` prefix
+	fakeroot -- tar -caf "${pkgname}-${pkgver}.tar.gz" -C "$pkgdir/usr" .
 }
 
 for arg in "$@"; do

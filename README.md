@@ -1,27 +1,9 @@
-# LLTeX
+# MMTeX
 
-This repository contains build instructions for LLTeX, a lightweight LuaTeX distribution.
+This repository contains build instructions for MMTeX, a minimal modern (Lua)TeX distribution.
 
-LLTeX provides two formats `optex` and texlive's plain `luatex`.
+MMTeX provides two formats `optex` and texlive's plain `luatex`.
 
+# Documentation
 
-## Build instructions
-
-To build Arch Linux - pacman package, run:
-
-```
-makepkg
-```
-
-To build .deb package, run:
-
-```
-./build-deb
-```
-
-To create both packages, while not building everything twice, run:
-
-```
-makepkg
-env USE_MAKEPKG_PKG=1 ./build-deb
-```
+See `doc/lltex-doc.{tex,pdf}` for motivation, details, build and install instructions.

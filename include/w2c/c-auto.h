@@ -1,7 +1,7 @@
 #ifndef WEB2C_C_AUTO_H
 #define WEB2C_C_AUTO_H
 
-#define WEB2CVERSION " (lltex)"
+#define WEB2CVERSION " (mmtex)"
 #define WEB2C_PACKAGE "web2c"
 #define WEB2C_PACKAGE_BUGREPORT "tex-k@tug.org"
 #define WEB2C_PACKAGE_NAME "Web2C"

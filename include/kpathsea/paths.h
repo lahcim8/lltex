@@ -1,19 +1,19 @@
 /* Actually useful variables. */
-#define DEFAULT_TEXMFCNF      "$TEXMFDOTDIR:{$XDG_CONFIG_HOME,~/.config,/etc}/lltex"
-#define DEFAULT_TEXFORMATS    "$TEXMFDOTDIR:{$SELFAUTODIR/share/lltex,$TEXMF}/web2c"
-#define DEFAULT_TEXINPUTS     "$TEXMFDOTDIR:{$SELFAUTODIR/share/lltex,$TEXMF}/tex//"
-#define DEFAULT_LUAINPUTS     "$TEXMFDOTDIR:{$SELFAUTODIR/share/lltex,$TEXMF}/tex//"
-#define DEFAULT_MPINPUTS      "$TEXMFDOTDIR:{$SELFAUTODIR/share/lltex,$TEXMF}/metapost//"
-#define DEFAULT_BIBINPUTS     "$TEXMFDOTDIR:{$SELFAUTODIR/share/lltex,$TEXMF}/bibtex/bib//"
-#define DEFAULT_BSTINPUTS     "$TEXMFDOTDIR:{$SELFAUTODIR/share/lltex,$TEXMF}/bibtex/bst//"
-#define DEFAULT_TTFONTS       "$TEXMFDOTDIR:{$SELFAUTODIR/share/lltex,$TEXMF}/fonts/truetype//"
-#define DEFAULT_OPENTYPEFONTS "$TEXMFDOTDIR:{$SELFAUTODIR/share/lltex,$TEXMF}/fonts/opentype//"
+#define DEFAULT_TEXMFCNF      "$TEXMFDOTDIR:{$XDG_CONFIG_HOME,~/.config,/etc}/mmtex"
+#define DEFAULT_TEXFORMATS    "$TEXMFDOTDIR:{$SELFAUTODIR/share/mmtex,$TEXMF}/web2c"
+#define DEFAULT_TEXINPUTS     "$TEXMFDOTDIR:{$SELFAUTODIR/share/mmtex,$TEXMF}/tex//"
+#define DEFAULT_LUAINPUTS     "$TEXMFDOTDIR:{$SELFAUTODIR/share/mmtex,$TEXMF}/tex//"
+#define DEFAULT_MPINPUTS      "$TEXMFDOTDIR:{$SELFAUTODIR/share/mmtex,$TEXMF}/metapost//"
+#define DEFAULT_BIBINPUTS     "$TEXMFDOTDIR:{$SELFAUTODIR/share/mmtex,$TEXMF}/bibtex/bib//"
+#define DEFAULT_BSTINPUTS     "$TEXMFDOTDIR:{$SELFAUTODIR/share/mmtex,$TEXMF}/bibtex/bst//"
+#define DEFAULT_TTFONTS       "$TEXMFDOTDIR:{$SELFAUTODIR/share/mmtex,$TEXMF}/fonts/truetype//"
+#define DEFAULT_OPENTYPEFONTS "$TEXMFDOTDIR:{$SELFAUTODIR/share/mmtex,$TEXMF}/fonts/opentype//"
 
 /* Hopefully these will die someday. */
-#define DEFAULT_TEXFONTMAPS   "$TEXMFDOTDIR:{$SELFAUTODIR/share/lltex,$TEXMF}/fonts/map//"
-#define DEFAULT_TFMFONTS      "$TEXMFDOTDIR:{$SELFAUTODIR/share/lltex,$TEXMF}/fonts/tfm//"
-#define DEFAULT_T1FONTS       "$TEXMFDOTDIR:{$SELFAUTODIR/share/lltex,$TEXMF}/fonts/type1//"
-#define DEFAULT_ENCFONTS      "$TEXMFDOTDIR:{$SELFAUTODIR/share/lltex,$TEXMF}/fonts/enc//"
+#define DEFAULT_TEXFONTMAPS   "$TEXMFDOTDIR:{$SELFAUTODIR/share/mmtex,$TEXMF}/fonts/map//"
+#define DEFAULT_TFMFONTS      "$TEXMFDOTDIR:{$SELFAUTODIR/share/mmtex,$TEXMF}/fonts/tfm//"
+#define DEFAULT_T1FONTS       "$TEXMFDOTDIR:{$SELFAUTODIR/share/mmtex,$TEXMF}/fonts/type1//"
+#define DEFAULT_ENCFONTS      "$TEXMFDOTDIR:{$SELFAUTODIR/share/mmtex,$TEXMF}/fonts/enc//"
 
 /* Shouldn't be used. */
 #define DEFAULT_GFFONTS       "/none"

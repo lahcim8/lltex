@@ -5,23 +5,23 @@
 \let\_firstnoindent=\relax
 \activettchar`
 
-\def\LLTeX{LL\TeX}
+\def\MMTeX{MM\TeX}
 \def\Metapost{Metapost}
 \def\eTeX{\leavevmode\hbox{$\varepsilon$}-\TeX}
 
-\tit \LLTeX
+\tit \MMTeX
 
 \author Michal Vlasák, 2020
 
 \sec Introduction
 
-\LLTeX\ is a lightweight \LuaTeX\ distribution for Linux. It aims to provide
-minimalist and modern base for Plain \LuaTeX\ and \OpTeX\ formats, but doesn't
-limit their potential.
+\MMTeX\ is a minimal modern \TeX\ (\LuaTeX) distribution for Linux. It aims to
+provide small base for Plain \LuaTeX\ and \OpTeX\ formats, but doesn't limit
+their potential.
 
-\LLTeX\ was created as a semestral work for the purposes of BI-TEX course at
+\MMTeX\ was created as a semestral work for the purposes of BI-TEX course at
 FIT CTU in Prague. It's repository is hosted at
-\url{https://github.com/lahcim8/lltex/}.
+\url{https://github.com/vlasakm/mmtex/}.
 
 \sec Motivation
 
@@ -36,17 +36,17 @@ default locations of `TEXMF` trees are not complaint to `hier(7)`. Instead,
 everything is in an isolated tree.
 
 I also wanted to explore how things really worked and what is really needed to
-get Plain running, while not missing any of \LuaTeX\ features.
+get Plain running, while not missing any of \LuaTeX's features.
 
 \sec Target users
 
-We target users who want to easily install a small ($\approx 32\,\hbox{MiB}$),
-but very functional \TeX\ system. As \LLTeX\ includes \OpTeX\ it can even serve
+We target users who want to easily install a small ($\approx 31\,\hbox{MiB}$),
+but very functional \TeX\ system. As \MMTeX\ includes \OpTeX\ it can even serve
 as a replacement of \LaTeX\ and it's packages.
 
-We also target use in Docker images where the small size matters too. While
-being able to install \LLTeX\ from a Linux distribution package manager makes
-it easy to use.
+We also target use in Docker images where the small size matters too.
+Additionally being able to install \MMTeX\ from a Linux distribution package
+manager makes it easy to use.
 
 \sec \LuaTeX\ as the only \TeX\ engine
 
@@ -59,7 +59,7 @@ in the form of `mplib`.
 
 But for a \TeX\ outsider the main benefits are that it outputs PDF files, fully
 supports Unicode and can use OpenType fonts. There aren't many reasons for not
-using \LuaTeX\ for new documents. That is why \LLTeX\ includes only this
+using \LuaTeX\ for new documents. That is why \MMTeX\ includes only this
 enginge.
 
 \sec \OpTeX\ and Plain \LuaTeX\ formats
@@ -71,7 +71,7 @@ the simplicity of Plain \TeX\ while in a sense offers even more then \LaTeX\
 --- where \LaTeX\ needs a package or external binary, \OpTeX\ has it built in.
 
 As the dependencies of these two formats are mostly the same they are both
-included in \LLTeX\ without much of an overhead.
+included in \MMTeX\ without much of an overhead.
 
 \sec Language support
 
@@ -136,7 +136,7 @@ actually use `luatex-hyphen.lua`, which uses information in `language.dat.lua`
 for handling synonyms and finding the names of pattern files (other fields in
 `language.dat.lua` are unused).
 
-\LLTeX\ includes all hyphenation patterns in the `txt` format --- they take up
+\MMTeX\ includes all hyphenation patterns in the `txt` format --- they take up
 only 260\ KiB afterall. To enable the use of all of them a `language.def` file
 is generated, which allows `etex.src` to register all languages. A minimal
 `language.dat.lua` file is also generated and contains the file names of
@@ -157,14 +157,14 @@ Traditionally Computer Modern family of fonts has been used as the default for
 \TeX. There are OpenType adaptations of Computer Modern --- most notably Latin
 Modern. But Latin Modern fonts are often already packaged for many systems. For
 example there is `fonts-lmodern` in Ubuntu and `otf-latin-modern` in Arch
-Linux. As \LLTeX\ aims to integrate well into these systems it doesn't provide
+Linux. As \MMTeX\ aims to integrate well into these systems it doesn't provide
 any OpenType fonts and instead expects the user to install fonts in the
-standard ways. \LLTeX\ can easily find them and use them.
+standard ways. \MMTeX\ can easily find them and use them.
 
 \secc 8-bit fonts
 
 Only 8-bit fonts can be preloaded into a \TeX\ format. Both \OpTeX\ and Plain
-do it. To support this \LLTeX\ includes minimal set of Type 1 fonts and their
+do it. To support this \MMTeX\ includes minimal set of Type 1 fonts and their
 respective metric and encoding files. A minimal `pdftex.map` file was created
 which is used to map names of `.tfm` metric files, to font names and font
 files, with optional reencodings. As this file isn't supposed to be used by
@@ -199,7 +199,7 @@ also be used from Plain \LuaTeX, by using `\input luaotfload.sty`.
 
 \sec `luamplib`
 
-\LLTeX\ includes `luamplib` package which provides user level macros for using
+\MMTeX\ includes `luamplib` package which provides user level macros for using
 `mplib`. `mplib` is \Metapost{} in form of a library built into \LuaTeX. To use
 it: `\input luamplib.sty`.
 
@@ -220,14 +220,14 @@ files). These variables can be set from (in order of significance):
 For finding `texmf.cnf` files the same path searching mechanism is used (but
 the location cannot be set from configuration file). This time the variable
 `TEXMFCNF` is used. All found `texmf.cnf`'s are taken into account. Earlier
-assignments in configuration files override later ones. That's why in \LLTeX\
+assignments in configuration files override later ones. That's why in \MMTeX\
 we compile \LuaTeX\ such that it first looks for `texmf.cnf` first in
 `$XDG_CONFIG_HOME/lltex/texmf.cnf` (where `$XDG_CONFIG_HOME` defaults to
 `~/.config`) for user configuration, then in `/etc/lltex/texmf.cnf`, for system
-wide configuration. The last possible llocation is set to \LLTeX's own config
+wide configuration. The last possible llocation is set to \MMTeX's own config
 file. This order essentially means that the user can always change anything.
 
-The fallback \LLTeX\ `texmf.cnf` resides in `../share/lltex/web2c/texmf.cnf`
+The fallback \MMTeX\ `texmf.cnf` resides in `../share/lltex/web2c/texmf.cnf`
 (relative to `luatex` binary). It sets `TEXMFVAR` (for cache files) and
 `OSFONTDIR` (for font files) to locations expected on Unix systems, so
 everything should work out of the box.
@@ -244,52 +244,64 @@ The order is important again here. We look first amongst our files because they
 are important for basic functionality and users most likely don't wont to
 override them (and if they do, they can use `TEXMFDOTDIR`).
 
-\sec Building \LLTeX
+\sec Building \MMTeX
 
-\LLTeX\ is easily packagable as one of it's goals is to integrate well into
-Unix systems. As an example of that the implementation of \LLTeX\ is really a
-`PKGBUILD` file which contains metadata used by `makepkg` program to create
-Arch Linux package. To accomodate other distributions a `build-deb` script is
-provided, which uses information in `PKGBUILD` to create a `.deb` package,
-which should be usable by a large part of Linux users.
+\MMTeX\ is easily packagable as one of it's goals is to integrate well into
+Unix systems. The implementation of \MMTeX\ is actually a `build` script which
+contains instructions for building \MMTeX\ to directory. This means that
+packagers can use this build script and some wrapper to easily create a package
+for a Linux distrubution or any other system. `package-builder` script is
+included which along with some metadata uses `build` and can create packages in
+`.deb`, Arch Linux and `tar.gz` formats.
 
 \secc[build] Build instructions
 
-To build Arch Linux package run in the root of \LLTeX\ repository:
+To build `mmtex` package files into a `pkg` directory, run:
 
 \begtt
-makepkg
+./package-builder
 \endtt
 
-To build `.deb` package, run:
+To package these files into usable package(s), you can instead pass one or more
+arguments:
+
+\begitems
+* `arch` (creates an Arch Linux package)
+* `deb` (creates `.deb` package)
+* `tar` (creates tarball)
+* `all` (all of the above)
+\enditems
+
+For example to create `.deb` package and a tarball:
 
 \begtt
-./build-deb
+./package-builder deb tar
 \endtt
 
-To build both packages without rebuilding everything twice, you can:
-
-\begtt
-makepkg
-env USE_MAKEPKG_PKG=1 ./build-deb
-\endtt
-
-\sec Installing \LLTeX
+\sec Installing \MMTeX
 
 \secc Arch Linux
 
-After obtaining `.pkg.tar.zst` file (see Section~\ref[build]), you can install it by executing:
+After obtaining `.pkg.tar.zst` file, you can install it by executing:
 
 \begtt
-pacman -U lltex-<VERSION>-x86_64.pkg.tar.zst
+pacman -U mmtex-<VERSION>-x86_64.pkg.tar.zst
 \endtt
 
 \secc Debian-based systems
 
-After obtaining `.deb` file (see Section~\ref[build]), you can install it by executing:
+After obtaining `.deb` file, you can install it by executing:
 
 \begtt
-dpkg -i lltex_<VERSION>_amd64.deb
+dpkg -i mmtex_<VERSION>_amd64.deb
+\endtt
+
+\secc Any Linux
+
+You can \"install" the tarball to `/usr/local` (or any other prefix) by executing:
+
+\begtt
+tar -C /usr/local -xf mmtex-<VERSION>.tar.gz
 \endtt
 
 \bye

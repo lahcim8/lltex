@@ -36,4 +36,5 @@ pdftex.map # mapping of used type1 fonts
 luatexiniconfig.tex # config for plain luatex format
 mfplain.lua # for creating .tfm from .mf using mplib
 extract-language-data.awk # creates language.def, language.dat.lua
-luaotfload.patch
+kpathsea.patch # set default values, suppress warning
+luaotfload.patch # patch a bug in luaotfload
