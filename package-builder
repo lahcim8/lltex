@@ -10,7 +10,7 @@ set -e
 # Dependencies for making .tar package: fakeroot
 
 pkgname=mmtex
-pkgver=0.1.1
+pkgver=0.2
 pkgdesc='A minimal modern (Lua)TeX distribution'
 pkgurl='https://gitlab.com/vlasakm/mmtex'
 arch_arch=x86_64
