@@ -32,7 +32,6 @@ http://mirrors.ctan.org/macros/luatex/optex.zip # optex
 http://mirrors.ctan.org/macros/latex/contrib/lipsum.zip # optex needs lipsum.ltd.tex
 
 include
-texmf.cnf # custom kpathsea config file
 pdftex.map # mapping of used type1 fonts
 luatexiniconfig.tex # config for plain luatex format
 mfplain.lua # for creating .tfm from .mf using mplib

@@ -19,10 +19,26 @@ install_exec() {
 # patch missing include in web2c
 sed -i '6i #include <w2c/config.h>' web2c/lib/lib.h
 
-# set our own TEXMFCNF value, using $pkgname
-sed -i "1i #define DEFAULT_TEXMFCNF \"{\$XDG_CONFIG_HOME,~/.config,/etc}/$pkgname:\$SELFAUTODIR/share/$pkgname/web2c\"" include/kpathsea/paths.h
-
 cd kpathsea
+
+# insert "built-in" configuration values to kpathsea
+sed -i '/cnf_path = kpathsea_init_format (kpse, kpse_cnf_format);/ a\
+#define SET_VAR(var, value) \\\
+  do { \\\
+    char *tmp1 = xmalloc(sizeof(var)   / sizeof(var[0])   + 1); strcpy(tmp1, var);   \\\
+    char *tmp2 = xmalloc(sizeof(value) / sizeof(value[0]) + 1); strcpy(tmp2, value); \\\
+    hash_insert(&(kpse->cnf_hash), tmp1, tmp2); \\\
+  } while (0) \
+\
+  SET_VAR("XDG_CONFIG_HOME", "~/.config");\
+  SET_VAR("XDG_CACHE_HOME", "~/.cache");\
+  SET_VAR("XDG_DATA_HOME", "~/.local/share");\
+  SET_VAR("TEXMFVAR", "$XDG_CACHE_HOME/lltex");\
+\
+  SET_VAR("TEXMFDOTDIR", ".");\
+  SET_VAR("TEXMFUSER", "$XDG_DATA_HOME/{lltex,texmf}");\
+  SET_VAR("TEXMFSYSTEM", "/usr/local/share/{lltex,texmf}:/usr/share/{lltex,texmf}");\
+  SET_VAR("TEXMF", "{$TEXMFUSER,$TEXMFSYSTEM}");' cnf.c
 
 # compile kpathsea to a static library as it is used twice
 $CC -c $CPPFLAGS $CFLAGS \
@@ -81,6 +97,9 @@ $CC -c $CPPFLAGS $CFLAGS \
 		xstat.c \
 		xstrdup.c
 ar rcs "$srcdir/libkpathsea.a" ./*.o
+
+# remove edited file to allow multiple consequent rebuilds without multiple inserts with sed
+rm -f cnf.c
 
 # compile `ctangle`, which is needed for mplib
 cd ../web2c/cwebdir
@@ -478,6 +497,3 @@ install ./*.fmt -t "$texmf/web2c"
 
 # create optex -> luatex symlink
 ln -s luatex "$pkgdir/usr/bin/optex"
-
-# install configuration file
-install texmf.cnf "$texmf/web2c/texmf.cnf"
