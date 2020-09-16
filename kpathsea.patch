@@ -1,9 +1,9 @@
 --- a/kpathsea/cnf.c
 +++ b/kpathsea/cnf.c
-@@ -240,6 +240,22 @@
-   string *cnf_files;
+@@ -241,6 +241,26 @@
    string *cnf;
    const_string cnf_path = kpathsea_init_format (kpse, kpse_cnf_format);
+
 +#define SET_VAR(var, value) \
 +  do { \
 +    char *tmp1 = xmalloc(sizeof(var)   / sizeof(var[0])   + 1); strcpy(tmp1, var);   \
@@ -11,19 +11,23 @@
 +    hash_insert(&(kpse->cnf_hash), tmp1, tmp2); \
 +  } while (0)
 +
++  SET_VAR("_TEXMFMMTEX", "!!$SELFAUTODIR/share/mmtex");
++
 +  SET_VAR("XDG_CONFIG_HOME", "~/.config");
 +  SET_VAR("XDG_CACHE_HOME", "~/.cache");
 +  SET_VAR("XDG_DATA_HOME", "~/.local/share");
 +  SET_VAR("TEXMFVAR", "$XDG_CACHE_HOME/mmtex");
++  SET_VAR("TEXMFDBS", "$_TEXMFMMTEX");
 +
 +  SET_VAR("TEXMFDOTDIR", ".");
 +  SET_VAR("TEXMFUSER", "$XDG_DATA_HOME/{mmtex,texmf}");
 +  SET_VAR("TEXMFSYSTEM", "/usr/local/share/{mmtex,texmf}:/usr/share/{mmtex,texmf}");
 +  SET_VAR("TEXMF", "{$TEXMFUSER,$TEXMFSYSTEM}");
-
++
    cnf_files = kpathsea_all_path_search (kpse, cnf_path, CNF_NAME);
    if (cnf_files && *cnf_files) {
-@@ -289,13 +305,6 @@
+     for (cnf = cnf_files; *cnf; cnf++) {
+@@ -289,13 +309,6 @@
        free (*cnf);
      }
      free (cnf_files);

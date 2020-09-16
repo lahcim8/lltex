@@ -31,27 +31,6 @@ patch -i luaotfload.patch
 
 cd kpathsea
 
-# insert "built-in" configuration values to kpathsea
-sed -i '/cnf_path = kpathsea_init_format (kpse, kpse_cnf_format);/ a\
-#define SET_VAR(var, value) \\\
-  do { \\\
-    char *tmp1 = xmalloc(sizeof(var)   / sizeof(var[0])   + 1); strcpy(tmp1, var);   \\\
-    char *tmp2 = xmalloc(sizeof(value) / sizeof(value[0]) + 1); strcpy(tmp2, value); \\\
-    hash_insert(&(kpse->cnf_hash), tmp1, tmp2); \\\
-  } while (0) \
-\
-  SET_VAR("XDG_CONFIG_HOME", "~/.config");\
-  SET_VAR("XDG_CACHE_HOME", "~/.cache");\
-  SET_VAR("XDG_DATA_HOME", "~/.local/share");\
-  SET_VAR("TEXMFVAR", "$XDG_CACHE_HOME/mmtex");\
-  /* Dont warn me if there is no configuration file, as I have builtin values. */\
-  SET_VAR("KPATHSEA_WARNING", "0");\
-\
-  SET_VAR("TEXMFDOTDIR", ".");\
-  SET_VAR("TEXMFUSER", "$XDG_DATA_HOME/{mmtex,texmf}");\
-  SET_VAR("TEXMFSYSTEM", "/usr/local/share/{mmtex,texmf}:/usr/share/{mmtex,texmf}");\
-  SET_VAR("TEXMF", "{$TEXMFUSER,$TEXMFSYSTEM}");' cnf.c
-
 # compile kpathsea to a static library as it is used twice
 $CC -c $CPPFLAGS $CFLAGS \
 	-DMAKE_KPSE_DLL -I ../ -I "$srcdir/include" \
@@ -501,6 +480,9 @@ TEXMFDOTDIR=".:lib" luatex -ini optex/base/optex.ini
 
 # install format files
 install ./*.fmt -t "$texmf/web2c"
+
+# create ls-R database
+(cd "$texmf" && ls -LAR ./ > ls-R)
 
 # create optex -> luatex symlink
 ln -s luatex "$pkgdir/usr/bin/optex"
