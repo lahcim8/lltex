@@ -1,5 +1,5 @@
 /* Actually useful variables. */
-#define DEFAULT_TEXMFCNF      "$TEXMFDOTDIR:{$XDG_CONFIG_HOME,~/.config,/etc}/mmtex"
+#define DEFAULT_TEXMFCNF      "$TEXMFDOTDIR:{$XDG_CONFIG_HOME,/etc}/mmtex"
 #define DEFAULT_TEXFORMATS    "$TEXMFDOTDIR:{$_TEXMFMMTEX,$TEXMF}/web2c"
 #define DEFAULT_TEXINPUTS     "$TEXMFDOTDIR:{$_TEXMFMMTEX,$TEXMF}/tex//"
 #define DEFAULT_LUAINPUTS     "$TEXMFDOTDIR:{$_TEXMFMMTEX,$TEXMF}/tex//"
