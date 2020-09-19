@@ -1,0 +1,61 @@
+#!/bin/sh
+
+set -e
+
+pkgdir=$1
+pkgname=$2
+# not used
+#pkgver=$3
+
+srcdir=$(readlink -f .)
+
+install() {
+	command install -Dm644 "$@"
+}
+
+docstrip_bootstrap() {
+	jobname=$1
+	options=$2
+	luatex -ini "\let\jobname\relax \input $jobname.dtx \
+		\askforoverwritefalse \
+		\generate{\file{$jobname.tex}{\from{$jobname.dtx}{$options}}} \
+		\end"
+}
+
+texmf="$pkgdir/usr/share/$pkgname"
+
+# generate lipsum.ltd.tex (needs docstrip and l3docstrip)
+docstrip_bootstrap docstrip initex,program,stats
+docstrip_bootstrap l3docstrip program
+TEXMFDOTDIR=.:lipsum luatex -ini '\let\obeyspaces=\relax \input lipsum.ins'
+
+# install pdftex.map and needed .enc files
+install pdftex.map -t "$texmf/fonts/map"
+install lm/fonts/enc/dvips/lm/lm-ec.enc -t "$texmf/fonts/enc"
+install cm-super/dvips/cm-super-t1.enc -t "$texmf/fonts/enc"
+
+# generate rsfs*.tfm files
+TEXMFDOTDIR=".:rsfs" luatex --luaonly mfplain.lua rsfs5 rsfs7 rsfs10
+
+# find all possible font files
+find . -type f -regex '.*\.\(tfm\|pfb\)$' > available_files
+# install only needed font files
+grep -f tfm_files available_files | xargs install -Dm644 -t "$texmf/fonts/tfm"
+grep -f pfb_files available_files | xargs install -Dm644 -t "$texmf/fonts/type1"
+
+# install optex files
+install optex/*/*.opm -t "$texmf/tex/optex"
+install lipsum.ltd.tex -t "$texmf/tex/lipsum"
+
+# run iniluatex to create format file
+TEXMF=$texmf luatex -ini optex/base/optex.ini
+
+# install format file
+install optex.fmt -t "$texmf/web2c"
+
+# create optex -> luatex symlink
+mkdir -p "$pkgdir/usr/bin"
+ln -s luatex "$pkgdir/usr/bin/optex"
+
+# create ls-R database
+(cd "$texmf" && ls -LAR ./ > ls-R)

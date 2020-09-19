@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -ex
+set -e
 
 # Build dependencies: git, svn, curl, unzip, tar
 # Dependencies for making Arch package: pacman (makepkg)
@@ -154,7 +154,7 @@ fi
 
 basedir=$(readlink -f "$pkgname")
 pkgdir=$(readlink -fm "pkg/$pkgname")
-srcdir=$(readlink -fm src)
+srcdir=$(readlink -fm src/$pkgname)
 
 . "$basedir/info"
 

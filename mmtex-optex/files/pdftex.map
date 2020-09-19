@@ -1,0 +1,150 @@
+% This file contains mappings needed by OpTeX.
+
+ec-lmr5  LMRoman5-Regular  <lm-ec.enc <lmr5.pfb
+ec-lmr6  LMRoman6-Regular  <lm-ec.enc <lmr6.pfb
+ec-lmr7  LMRoman7-Regular  <lm-ec.enc <lmr7.pfb
+ec-lmr8  LMRoman8-Regular  <lm-ec.enc <lmr8.pfb
+ec-lmr9  LMRoman9-Regular  <lm-ec.enc <lmr9.pfb
+ec-lmr10 LMRoman10-Regular <lm-ec.enc <lmr10.pfb
+ec-lmr12 LMRoman12-Regular <lm-ec.enc <lmr12.pfb
+ec-lmr17 LMRoman17-Regular <lm-ec.enc <lmr17.pfb
+
+ec-lmbx5  LMRoman5-Bold  <lm-ec.enc <lmbx5.pfb
+ec-lmbx6  LMRoman6-Bold  <lm-ec.enc <lmbx6.pfb
+ec-lmbx7  LMRoman7-Bold  <lm-ec.enc <lmbx7.pfb
+ec-lmbx8  LMRoman8-Bold  <lm-ec.enc <lmbx8.pfb
+ec-lmbx9  LMRoman9-Bold  <lm-ec.enc <lmbx9.pfb
+ec-lmbx10 LMRoman10-Bold <lm-ec.enc <lmbx10.pfb
+ec-lmbx12 LMRoman12-Bold <lm-ec.enc <lmbx12.pfb
+
+ec-lmri7  LMRoman7-Italic  <lm-ec.enc <lmri7.pfb
+ec-lmri8  LMRoman8-Italic  <lm-ec.enc <lmri8.pfb
+ec-lmri9  LMRoman9-Italic  <lm-ec.enc <lmri9.pfb
+ec-lmri10 LMRoman10-Italic <lm-ec.enc <lmri10.pfb
+ec-lmri12 LMRoman12-Italic <lm-ec.enc <lmri12.pfb
+
+ec-lmbxi10 LMRoman10-BoldItalic <lm-ec.enc <lmbxi10.pfb
+
+ec-lmtt8  LMMono8-Regular  <lm-ec.enc <lmtt8.pfb
+ec-lmtt9  LMMono9-Regular  <lm-ec.enc <lmtt9.pfb
+ec-lmtt10 LMMono10-Regular <lm-ec.enc <lmtt10.pfb
+ec-lmtt12 LMMono12-Regular <lm-ec.enc <lmtt12.pfb
+
+
+cmmi5  CMMI5  <cmmi5.pfb
+cmmi6  CMMI6  <cmmi6.pfb
+cmmi7  CMMI7  <cmmi7.pfb
+cmmi8  CMMI8  <cmmi8.pfb
+cmmi9  CMMI9  <cmmi9.pfb
+cmmi10 CMMI10 <cmmi10.pfb
+cmmi12 CMMI12 <cmmi12.pfb
+
+cmmib5  CMMIB5  <cmmib5.pfb
+cmmib6  CMMIB6  <cmmib6.pfb
+cmmib7  CMMIB7  <cmmib7.pfb
+cmmib8  CMMIB8  <cmmib8.pfb
+cmmib9  CMMIB9  <cmmib9.pfb
+cmmib10 CMMIB10 <cmmib10.pfb
+
+cmsy5  CMSY5  <cmsy5.pfb
+cmsy6  CMSY6  <cmsy6.pfb
+cmsy7  CMSY7  <cmsy7.pfb
+cmsy8  CMSY8  <cmsy8.pfb
+cmsy9  CMSY9  <cmsy9.pfb
+cmsy10 CMSY10 <cmsy10.pfb
+
+cmbsy5  CMBSY5  <cmbsy5.pfb
+cmbsy6  CMBSY6  <cmbsy6.pfb
+cmbsy7  CMBSY7  <cmbsy7.pfb
+cmbsy8  CMBSY8  <cmbsy8.pfb
+cmbsy9  CMBSY9  <cmbsy9.pfb
+cmbsy10 CMBSY10 <cmbsy10.pfb
+
+cmex7  CMEX7  <cmex7.pfb
+cmex8  CMEX8  <cmex8.pfb
+cmex9  CMEX9  <cmex9.pfb
+cmex10 CMEX10 <cmex10.pfb
+
+cmexb10 CMEXB10 <cmexb10.pfb
+
+cmr5  CMR5  <cmr5.pfb
+cmr6  CMR6  <cmr6.pfb
+cmr7  CMR7  <cmr7.pfb
+cmr8  CMR8  <cmr8.pfb
+cmr9  CMR9  <cmr9.pfb
+cmr10 CMR10 <cmr10.pfb
+cmr12 CMR12 <cmr12.pfb
+cmr17 CMR17 <cmr17.pfb
+
+cmbx5  CMBX5  <cmbx5.pfb
+cmbx6  CMBX6  <cmbx6.pfb
+cmbx7  CMBX7  <cmbx7.pfb
+cmbx8  CMBX8  <cmbx8.pfb
+cmbx9  CMBX9  <cmbx9.pfb
+cmbx10 CMBX10 <cmbx10.pfb
+cmbx12 CMBX12 <cmbx12.pfb
+
+cmti7  CMTI7  <cmti7.pfb
+cmti8  CMTI8  <cmti8.pfb
+cmti9  CMTI9  <cmti9.pfb
+cmti10 CMTI10 <cmti10.pfb
+cmti12 CMTI12 <cmti12.pfb
+
+cmtt8  CMTT8  <cmtt8.pfb
+cmtt9  CMTT9  <cmtt9.pfb
+cmtt10 CMTT10 <cmtt10.pfb
+cmtt12 CMTT12 <cmtt12.pfb
+
+
+msam5  MSAM5  <msam5.pfb
+msam6  MSAM6  <msam6.pfb
+msam7  MSAM7  <msam7.pfb
+msam8  MSAM8  <msam8.pfb
+msam9  MSAM9  <msam9.pfb
+msam10 MSAM10 <msam10.pfb
+
+msbm5  MSBM5  <msbm5.pfb
+msbm6  MSBM6  <msbm6.pfb
+msbm7  MSBM7  <msbm7.pfb
+msbm8  MSBM8  <msbm8.pfb
+msbm9  MSBM9  <msbm9.pfb
+msbm10 MSBM10 <msbm10.pfb
+
+
+eufm5  EUFM5  <eufm5.pfb
+eufm6  EUFM7  <eufm7.pfb
+eufm7  EUFM7  <eufm7.pfb
+eufm8  EUFM7  <eufm7.pfb
+eufm9  EUFM10 <eufm10.pfb
+eufm10 EUFM10 <eufm10.pfb
+
+eufb5  EUFB5  <eufb5.pfb
+eufb6  EUFB7  <eufb7.pfb
+eufb7  EUFB7  <eufb7.pfb
+eufb8  EUFB7  <eufb7.pfb
+eufb9  EUFB10 <eufb10.pfb
+eufb10 EUFB10 <eufb10.pfb
+
+
+rsfs5  rsfs5  <rsfs5.pfb
+rsfs7  rsfs7  <rsfs7.pfb
+rsfs10 rsfs10 <rsfs10.pfb
+
+
+ecsx0500 SFSX0500 <cm-super-t1.enc <sfsx0500.pfb
+ecsx0600 SFSX0600 <cm-super-t1.enc <sfsx0600.pfb
+ecsx0700 SFSX0700 <cm-super-t1.enc <sfsx0700.pfb
+ecsx0800 SFSX0800 <cm-super-t1.enc <sfsx0800.pfb
+ecsx0900 SFSX0900 <cm-super-t1.enc <sfsx0900.pfb
+ecsx1000 SFSX1000 <cm-super-t1.enc <sfsx1000.pfb
+ecsx1095 SFSX1095 <cm-super-t1.enc <sfsx1095.pfb
+ecsx1200 SFSX1200 <cm-super-t1.enc <sfsx1200.pfb
+
+ecso0500 SFSO0500 <cm-super-t1.enc <sfso0500.pfb
+ecso0600 SFSO0600 <cm-super-t1.enc <sfso0600.pfb
+ecso0700 SFSO0700 <cm-super-t1.enc <sfso0700.pfb
+ecso0800 SFSO0800 <cm-super-t1.enc <sfso0800.pfb
+ecso0900 SFSO0900 <cm-super-t1.enc <sfso0900.pfb
+ecso1000 SFSO1000 <cm-super-t1.enc <sfso1000.pfb
+ecso1095 SFSO1095 <cm-super-t1.enc <sfso1095.pfb
+ecso1200 SFSO1200 <cm-super-t1.enc <sfso1200.pfb

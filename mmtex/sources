@@ -7,19 +7,12 @@ http://mirrors.ctan.org/obsolete/systems/e-tex/v2/src/etexdefs.lib # etexdefs.li
 http://mirrors.ctan.org/macros/generic/unicode-data.zip # unicode-data
 
 http://mirrors.ctan.org/systems/knuth/dist/lib.zip # plain.tex, hyphen.tex
-http://mirrors.ctan.org/fonts/cm/mf/cmbase.mf # cmbase for generating rsfs .tfm files
 http://mirrors.ctan.org/fonts/amsfonts.zip # computer modern .pfb files
 http://mirrors.ctan.org/fonts/cm/tfm.zip # computer modern .tfm files
 http://mirrors.ctan.org/fonts/manual.zip # manfnt font
-http://mirrors.ctan.org/fonts/ec.zip # ecso, ecsx .tfm files
-http://mirrors.ctan.org/fonts/lm.zip # ec-lm .pfb files
-http://mirrors.ctan.org/fonts/rsfs.zip # rsfs .pfb files
-http://mirrors.ctan.org/fonts/ps-type1/cm-super.zip # ecso, ecsx .pfb files
-http://mirrors.ctan.org/macros/cstex/base/cmexb.tar.gz # cmexb font
 
 http://mirrors.ctan.org/macros/luatex/generic/lualibs.zip # lualibs
 http://mirrors.ctan.org/macros/latex/base.zip # ltluatex + docstrip
-http://mirrors.ctan.org/macros/latex/contrib/l3kernel.zip # l3docstrip
 http://mirrors.ctan.org/macros/luatex/generic/luaotfload.zip # luaotfload
 http://mirrors.ctan.org/macros/luatex/generic/luamplib.zip # luamplib
 
@@ -28,13 +21,9 @@ svn+https://serveur-svn.lri.fr/svn/modhel/metapost/trunk/texmf/metapost/base
 
 http://mirrors.ctan.org/macros/generic/tex-ini-files.zip # luatex.ini, etc
 
-http://mirrors.ctan.org/macros/luatex/optex.zip # optex
-http://mirrors.ctan.org/macros/latex/contrib/lipsum.zip # optex needs lipsum.ltd.tex
-
 include # headers for kpathsea and web2c
 kpathsea.patch # patch for "extending" kpathsea
 luaotfload.patch # patch bug in luaotfload
 pdftex.map # mapping of used type1 fonts
 luatexiniconfig.tex # config for plain luatex format
-mfplain.lua # for creating .tfm from .mf using mplib
 extract-language-data.awk # creates language.def, language.dat.lua

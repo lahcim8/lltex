@@ -416,10 +416,8 @@ texmf="$pkgdir/usr/share/$pkgname"
 install_exec web2c/luatexdir/luatex "$pkgdir/usr/bin/luatex"
 PATH="$pkgdir/usr/bin:$PATH"
 
-# generate lipsum.ltd.tex (needs docstrip and l3docstrip)
+# generate docstrip.tex
 yes | TEXMFDOTDIR=.:base luatex -ini docstrip.ins # create docstrip.tex
-TEXMFDOTDIR=.:l3kernel luatex -ini l3.ins # create l3docstrip.tex
-TEXMFDOTDIR=.:lipsum luatex -ini '\let\obeyspaces=\relax \input lipsum.ins'
 
 # generate ltluatex.{lua,tex}
 yes | env TEXMFDOTDIR=.:base luatex -ini format.ins
@@ -430,7 +428,7 @@ TEXMFDOTDIR=.:luamplib luatex -ini '\catcode`\{=1 \catcode`\}=2 \let\obeyspaces\
 # generate some lualibs files
 TEXMFDOTDIR=.:lualibs luatex -ini '\catcode`\{=1 \catcode`\}=2 \let\obeyspaces\relax \input lualibs.dtx'
 
-# install luatex packages needed by both plain luatex and optex
+# install luatex packages
 install tex-hyphen/hyph-utf8/tex/generic/hyph-utf8/patterns/txt/* -t "$texmf/tex/hyph-utf8"
 (cd unicode-data; install CaseFolding.txt load-unicode-data.tex PropList.txt ScriptExtensions.txt Scripts.txt UnicodeData.txt -t "$texmf/tex/unicode-data")
 install lualibs*.lua lualibs/lualibs*.lua -t "$texmf/tex/lualibs"
@@ -440,19 +438,14 @@ install luamplib.lua luamplib.sty -t "$texmf/tex/luamplib"
 install base/*.mp -t "$texmf/metapost"
 install tex-hyphen/hyph-utf8/tex/luatex/hyph-utf8/luatex-hyphen.lua -t "$texmf/tex/hyph-utf8"
 
-# install pdftex.map and needed .enc files
+# install pdftex.map
 install pdftex.map -t "$texmf/fonts/map"
-install lm/fonts/enc/dvips/lm/lm-ec.enc -t "$texmf/fonts/enc"
-install cm-super/dvips/cm-super-t1.enc -t "$texmf/fonts/enc"
 
 # extract language information to language.def and language.dat.lua
 awk -f extract-language-data.awk tex-hyphen/TL/tlpkg/tlpsrc/*.tlpsrc
 # language.dat.lua is needed at run time, language.def is needed only by
 # etex.src at luatex plain format creation
 install language.dat.lua -t "$texmf/tex/$pkgname"
-
-# generate rsfs*.tfm files
-TEXMFDOTDIR=".:rsfs" luatex --luaonly mfplain.lua rsfs5 rsfs7 rsfs10
 
 # there are two manfnt.tfm files, one from cm-tfm package and one from manual package
 # use the one from manual package
@@ -470,19 +463,11 @@ grep -f pfb_files available_files | xargs install -Dm644 -t "$texmf/fonts/type1"
 # need etex.src from depths of hyph-utf8
 cp tex-hyphen/hyph-utf8/tex/luatex/hyph-utf8/etex.src .
 
-# install optex files
-install optex/*/*.opm -t "$texmf/tex/optex"
-install lipsum.ltd.tex -t "$texmf/tex/lipsum"
+# run iniluatex to create format file
+TEXMF=$texmf TEXMFDOTDIR=".:tex-ini-files:lib" luatex -ini tex-ini-files/luatex.ini
 
-# run iniluatex to create format files
-TEXMFDOTDIR=".:tex-ini-files:lib" luatex -ini tex-ini-files/luatex.ini
-TEXMFDOTDIR=".:lib" luatex -ini optex/base/optex.ini
-
-# install format files
-install ./*.fmt -t "$texmf/web2c"
+# install format file
+install luatex.fmt -t "$texmf/web2c"
 
 # create ls-R database
 (cd "$texmf" && ls -LAR ./ > ls-R)
-
-# create optex -> luatex symlink
-ln -s luatex "$pkgdir/usr/bin/optex"

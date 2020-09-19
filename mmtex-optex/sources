@@ -1,0 +1,19 @@
+http://mirrors.ctan.org/fonts/amsfonts.zip # computer modern .pfb files
+http://mirrors.ctan.org/fonts/cm/tfm.zip # computer modern .tfm files
+http://mirrors.ctan.org/fonts/cm/mf/cmbase.mf # cmbase for generating rsfs .tfm files
+http://mirrors.ctan.org/fonts/ec.zip # ecso, ecsx .tfm files
+http://mirrors.ctan.org/fonts/lm.zip # ec-lm .pfb files
+http://mirrors.ctan.org/fonts/rsfs.zip # rsfs .pfb files
+http://mirrors.ctan.org/fonts/ps-type1/cm-super.zip # ecso, ecsx .pfb files
+http://mirrors.ctan.org/macros/cstex/base/cmexb.tar.gz # cmexb font
+
+http://mirrors.ctan.org/macros/luatex/optex.zip # optex
+http://mirrors.ctan.org/systems/knuth/dist/lib/hyphen.tex # Knuth's hyphen.tex
+http://mirrors.ctan.org/macros/latex/contrib/lipsum.zip # optex needs lipsum.ltd.tex
+http://mirrors.ctan.org/macros/latex/base/docstrip.dtx # docstrip required by l3docstrip
+http://mirrors.ctan.org/macros/latex/contrib/l3kernel/l3docstrip.dtx # l3docstrip needed by lipsum
+
+pdftex.map # mapping of used type1 fonts
+tfm_files # list of needed tfm files
+pfb_files # list of needed pfb files
+mfplain.lua # for generating .tfm from .mf using mplib

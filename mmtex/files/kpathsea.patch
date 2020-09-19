@@ -20,7 +20,7 @@
 +    hash_insert(&(kpse->cnf_hash), tmp1, tmp2); \
 +  } while (0)
 +
-+  SET_VAR("_TEXMFMMTEX", "!!$SELFAUTODIR/share/mmtex");
++  SET_VAR("_TEXMFMMTEX", "!!$SELFAUTODIR/share/mmtex-$progname:!!$SELFAUTODIR/share/mmtex");
 +
 +  SET_VAR("XDG_CONFIG_HOME", "~/.config");
 +  SET_VAR("XDG_CACHE_HOME", "~/.cache");
