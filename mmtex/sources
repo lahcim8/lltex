@@ -31,8 +31,9 @@ http://mirrors.ctan.org/macros/generic/tex-ini-files.zip # luatex.ini, etc
 http://mirrors.ctan.org/macros/luatex/optex.zip # optex
 http://mirrors.ctan.org/macros/latex/contrib/lipsum.zip # optex needs lipsum.ltd.tex
 
-include
-patches
+include # headers for kpathsea and web2c
+kpathsea.patch # patch for "extending" kpathsea
+luaotfload.patch # patch bug in luaotfload
 pdftex.map # mapping of used type1 fonts
 luatexiniconfig.tex # config for plain luatex format
 mfplain.lua # for creating .tfm from .mf using mplib

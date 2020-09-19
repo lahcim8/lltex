@@ -1,0 +1,7 @@
+pkgver=0.2.2
+pkgdesc='A minimal modern (Lua)TeX distribution'
+pkgurl='https://gitlab.com/vlasakm/mmtex'
+arch_arch=x86_64
+debian_arch=amd64
+arch_depends="zziplib libpng zlib"
+debian_depends="libzzip-0-13, libpng16-16, zlib1g"

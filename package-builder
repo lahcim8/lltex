@@ -1,91 +1,82 @@
 #!/bin/sh
 
-set -e
+set -ex
 
 # Build dependencies: git, svn, curl, unzip, tar
-# Build and runtime dependencies: zlib, libpng, zziplib
-
 # Dependencies for making Arch package: pacman (makepkg)
 # Dependencies for making .deb package: dpkg-deb
 # Dependencies for making .tar package: fakeroot
 
-pkgname=mmtex
-pkgver=0.2.2
-pkgdesc='A minimal modern (Lua)TeX distribution'
-pkgurl='https://gitlab.com/vlasakm/mmtex'
-arch_arch=x86_64
-debian_arch=amd64
-arch_depends="zziplib libpng zlib"
-debian_depends="libzzip-0-13, libpng16-16, zlib1g"
-
 packager="Michal Vlasák <lahcim8@gmail.com>"
 
-basedir=$(readlink -f .)
-pkgdir=$(readlink -f pkg)
-srcdir=$(readlink -f src)
+get_package_sources() (
+	echo "Getting sources.."
+	mkdir -p "$srcdir"
+	cd "$srcdir"
+	while read -r src _; do
+		case "$src" in
+		\#*|'')
+			# comment or empty line
+		;;
+		git+*)
+			echo "Getting git repository '$src'.."
+			url=${src##git+}
+			ref=${url##*=}
+			url=${url%[#@]*}
+			dir=${url##*/}
 
-echo "Getting sources.."
-mkdir -p "$srcdir"
-cd "$srcdir"
-while read -r src _; do
-	case "$src" in
-	\#*|'')
-		# comment or empty line
-	;;
-	git+*)
-		echo "Getting git repository '$src'.."
-		url=${src##git+}
-		ref=${url##*=}
-		url=${url%[#@]*}
-		dir=${url##*/}
+			if [ ! -d "$dir" ]; then
+				git clone --depth=1 --branch="$ref" -c advice.detachedHead=false "$url" "$dir"
+			fi
+		;;
+		svn*)
+			src=${src##svn+}
+			echo "Getting subversion repository '$src'.."
+			svn checkout --username anonsvn --password anonsvn "$src"
+		;;
+		http://*|https://*)
+			echo "Getting remote source '$src'.."
+			dest=${src##*/}
+			if [ ! -f "$dest" ]; then
+				curl -fLo "$dest" "$src"
+			fi
 
-		if [ ! -d "$dir" ]; then
-			git clone --depth=1 --branch="$ref" -c advice.detachedHead=false "$url" "$dir"
-		fi
-	;;
-	svn*)
-		src=${src##svn+}
-		echo "Getting subversion repository '$src'.."
-		svn checkout --username anonsvn --password anonsvn "$src"
-	;;
-	http://*|https://*)
-		echo "Getting remote source '$src'.."
-		dest=${src##*/}
-		if [ ! -f "$dest" ]; then
-			curl -fLo "$dest" "$src"
-		fi
-
-		case "$dest" in
-		*.zip)
-			unzip -uo "$dest" ;;
-		*.tar*)
-			tar -xf "$dest" ;;
+			case "$dest" in
+			*.zip)
+				unzip -uo "$dest" ;;
+			*.tar*)
+				tar -xf "$dest" ;;
+			esac
+		;;
+		*)
+			echo "Getting local source '$src'.."
+			cp -rf "$basedir/files/$src" .
 		esac
-	;;
-	*)
-		echo "Getting local source '$src'.."
-		cp -rf "../$src" .
-	esac
-done < "$basedir/sources"
-cd "$basedir"
+	done < "$basedir/sources"
+)
 
-# export compilation variables, fallback to some defaults
-export CC CXX LD CPPFLAGS CFLAGS CXXFLAGS LDFLAGS MAKEFLAGS
-: "${CC:="gcc"}"
-: "${CXX:="$CC"}"
-: "${LD:="$CC"}"
-: "${CPPFLAGS:="-D_FORTIFY_SOURCE=2"}"
-: "${CFLAGS:="-march=native -O2 -pipe -fno-plt"}"
-: "${CXXFLAGS:="${CFLAGS}"}"
-: "${LDFLAGS:="-Wl,-O1,--sort-common,--as-needed,-z,relro,-z,now"}"
-: "${MAKEFLAGS:="-j$(nproc)"}"
+build_package() (
+	get_package_sources
 
-# ensure clean pkgdir
-rm -rf "$pkgdir"
-mkdir -p "$pkgdir"
+	# export compilation variables, fallback to some defaults
+	export CC CXX LD CPPFLAGS CFLAGS CXXFLAGS LDFLAGS MAKEFLAGS
+	: "${CC:="gcc"}"
+	: "${CXX:="$CC"}"
+	: "${LD:="$CC"}"
+	: "${CPPFLAGS:="-D_FORTIFY_SOURCE=2"}"
+	: "${CFLAGS:="-march=native -O2 -pipe -fno-plt"}"
+	: "${CXXFLAGS:="${CFLAGS}"}"
+	: "${LDFLAGS:="-Wl,-O1,--sort-common,--as-needed,-z,relro,-z,now"}"
+	: "${MAKEFLAGS:="-j$(nproc)"}"
 
-echo "Running build script.."
-(cd "$srcdir"; "$basedir/build" "$pkgdir" "$pkgname" "$pkgver")
+	# ensure clean pkgdir
+	rm -rf "$pkgdir"
+	mkdir -p "$pkgdir"
+
+	echo "Running build script.."
+	cd "$srcdir"
+	"$basedir/build" "$pkgdir" "$pkgname" "$pkgver"
+)
 
 debian_package() {
 	echo "Creating Debian package."
@@ -137,7 +128,7 @@ arch_package() {
 	load_makepkg_config
 	create_package
 	EOF
-	rm -f "$pkgdir/.PKGINFO" "$pkgdir/.BUILDINFO" "$pkgdir/.MTREE"
+	rm -f "$pkgdir/.PKGINFO" "$pkgdir/.BUILDINFO" "$pkgdir/.MTREE" mkpkg
 }
 
 tar_package() {
@@ -147,14 +138,52 @@ tar_package() {
 	fakeroot -- tar -caf "${pkgname}-${pkgver}.tar.gz" -C "$pkgdir/usr" .
 }
 
-for arg in "$@"; do
-	case "$arg" in
-	arch) arch_package ;;
-	debian) debian_package ;;
-	tar) tar_package ;;
-	all)
-		arch_package
-		debian_package
-		tar_package
-	esac
-done
+if [ $# -lt 2 ]; then
+	echo "Missing arguments" >&2
+	exit 1
+fi
+
+cmd=$1
+pkgname=$2
+shift 2
+
+if [ ! -d "$pkgname" ]; then
+	echo "Invalid package name '$pkgname' - no such directory" >&2
+	exit 1
+fi
+
+basedir=$(readlink -f "$pkgname")
+pkgdir=$(readlink -fm "pkg/$pkgname")
+srcdir=$(readlink -fm src)
+
+. "$basedir/info"
+
+case "$cmd" in
+build)
+	build_package
+;;
+package)
+	if [ $# -lt 1 ]; then
+		exit 0
+	fi
+	build_package
+	for arg in "$@"; do
+		case "$arg" in
+		arch) arch_package ;;
+		debian) debian_package ;;
+		tar) tar_package ;;
+		all)
+			arch_package
+			debian_package
+			tar_package
+		;;
+		*)
+			echo "Invalid package format '$arg'" >&2
+			exit 1
+		esac
+	done
+;;
+*)
+	echo "Invalid command '$cmd'" >&2
+	exit 1
+esac	
