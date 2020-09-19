@@ -6,7 +6,9 @@
 \activettchar`
 
 \def\MMTeX{MM\TeX}
+\def\pdfTeX{pdf\TeX}
 \def\Metapost{Metapost}
+\def\TeXLive{\TeX\ Live}
 \def\eTeX{\leavevmode\hbox{$\varepsilon$}-\TeX}
 
 \tit \MMTeX
@@ -25,7 +27,7 @@ FIT CTU in Prague. It's repository is hosted at
 
 \sec Motivation
 
-I have been dissatisfied with TeX Live. It is complicated and huge. The full
+I have been dissatisfied with \TeXLive. It is complicated and huge. The full
 scheme installation, which is the default, takes $7\,075\,\hbox{MiB}$. Even the
 minimal scheme which only includes Plain \TeX\ is 106\,MiB in size. There are
 options to exclude source files and documentation which reduce size of full
@@ -44,9 +46,9 @@ We target users who want to easily install a small ($\approx 31\,\hbox{MiB}$),
 but very functional \TeX\ system. As \MMTeX\ includes \OpTeX\ it can even serve
 as a replacement of \LaTeX\ and it's packages.
 
-We also target use in Docker images where the small size matters too.
-Additionally being able to install \MMTeX\ from a Linux distribution package
-manager makes it easy to use.
+We also target use in Docker images or CI/CD scripts where the small size
+matters too. Additionally being able to install \MMTeX\ from a Linux
+distribution package manager makes it easy to use.
 
 \sec \LuaTeX\ as the only \TeX\ engine
 
@@ -81,13 +83,13 @@ such limitation and by using Lua it is possible to load hyphenation patterns at
 any time.
 
 Nowadays virtually all hyphenation patterns that have been used by \TeX\ users
-are included in the `hyph-utf8` CTAN package. All patterns are provided in the
-form usable by older \TeX\ enginges (which had to deal with 8-bit font
-encodings) and the new plain text patterns directly loadable by \LuaTeX.
+are included in the `hyph-utf8` package. All patterns are provided in the form
+usable by older \TeX\ enginges (which had to deal with 8-bit font encodings)
+and the new plain text patterns directly loadable by \LuaTeX.
 
 To save space and to not include hyphenation patterns of all languages in the
-format, TeX Live provides hyphenation patterns for each language in a different
-package. Each package then registers itself using the TeX Live \"execute
+format, \TeXLive provides hyphenation patterns for each language in a different
+package. Each package then registers itself using the \TeXLive \"execute
 AddHyphen". An example for Czech language:
 
 \begtt
@@ -123,7 +125,6 @@ and this is what gets added to `language.dat.lua`:
 	},
 \endtt
 
-
 Normally `language.def` is read by `etex.src` at format creation time and for
 listed language registers them and loads their hyphenation patterns. That
 enables their use later with `\uselanguage`.
@@ -137,10 +138,10 @@ for handling synonyms and finding the names of pattern files (other fields in
 `language.dat.lua` are unused).
 
 \MMTeX\ includes all hyphenation patterns in the `txt` format --- they take up
-only 260\ KiB afterall. To enable the use of all of them a `language.def` file
-is generated, which allows `etex.src` to register all languages. A minimal
-`language.dat.lua` file is also generated and contains the file names of
-pattern files of all supported languages.
+3.2\ MiB, which is still reasonable. To enable the use of all of them a
+`language.def` file is generated, which allows `etex.src` to register all
+languages. A minimal `language.dat.lua` file is also generated and contains the
+file names of pattern files of all supported languages.
 
 In \OpTeX\ the situation is simpler as it already includes the information that
 \eTeX\ expects in  `language.def`. However it still uses `luatex-hyphen.lua`
@@ -151,34 +152,37 @@ and `language.dat.lua`.
 To use \LuaTeX\ to it's full potential it is better to use OpenType fonts.
 These are the same fonts that are used by other programs and as such some of
 them are already preinstalled on operating systems. And probably many more are
-additionally installed by users or administrators.
+additionally installed by users or administrators. The idea is to let users use
+the fonts they already have (or can get) on their system / TDS tree.
 
 Traditionally Computer Modern family of fonts has been used as the default for
 \TeX. There are OpenType adaptations of Computer Modern --- most notably Latin
 Modern. But Latin Modern fonts are often already packaged for many systems. For
-example there is `fonts-lmodern` in Ubuntu and `otf-latin-modern` in Arch
-Linux. As \MMTeX\ aims to integrate well into these systems it doesn't provide
-any OpenType fonts and instead expects the user to install fonts in the
-standard ways. \MMTeX\ can easily find them and use them.
+example there is `fonts-lmodern` on Debian based systems and `otf-latin-modern`
+on Arch Linux. As \MMTeX\ aims to integrate well into these systems it doesn't
+provide any OpenType fonts and instead expects the user to install fonts in the
+standard ways. \MMTeX\ can easily find and use them.
 
 \secc 8-bit fonts
 
 Only 8-bit fonts can be preloaded into a \TeX\ format. Both \OpTeX\ and Plain
 do it. To support this \MMTeX\ includes minimal set of Type 1 fonts and their
-respective metric and encoding files. A minimal `pdftex.map` file was created
-which is used to map names of `.tfm` metric files, to font names and font
-files, with optional reencodings. As this file isn't supposed to be used by
-`dvips` it's directives are not included. This is an example from `pdftex.map`:
+respective metric and encoding files. A `pdftex.map` file is needeed, as it is
+used to map names of `.tfm` metric files, to font names and font files, with
+optional reencodings. \pdfTeX and \LuaTeX\ only read one `pdftex.map` file, but
+each font package usually provides one or more `.map` files. That is why an
+aggregate `pdftex.map` is usually generated. As \MMTeX\ supports only limited
+number of Type 1 fonts a minimal `pdftex.map` was created by hand. As this file
+isn't supposed to be used by `dvips` it's directives are not included. This is
+an example line from `pdftex.map`:
 
-\begtt
-cmr5 CMR5 <cmr5.pfb
-\endtt
+\begtt cmr5 CMR5 <cmr5.pfb \endtt
 
 This line makes connection between cmr5.tfm metric file, cmr5.pfb Type 1 font
 file and CMR5 font name. (CMR5 stands for Computer Modern Roman in 5 point
 optical size).
 
-Another example:
+A more complicated example:
 
 \begtt
 ec-lmr5 LMRoman5-Regular <lm-ec.enc <lmr5.pfb
@@ -197,10 +201,15 @@ In order to handle OpenType fonts some Lua code is needed. `luaotfload` is
 included for this purpose as it is already used internally by \OpTeX. It can
 also be used from Plain \LuaTeX, by using `\input luaotfload.sty`.
 
+`luaotfload` is able to find all system fonts, because it reads `font-config`
+configuration. This means that there is no need to set the `OSFONTDIR`
+variable. Standard `TDS` directories for font files (namely
+`$TEXMF/fonts/opentype` and `$TEXMF/fonts/truetype`) also work.
+
 \sec `luamplib`
 
 \MMTeX\ includes `luamplib` package which provides user level macros for using
-`mplib`. `mplib` is \Metapost{} in form of a library built into \LuaTeX. To use
+`mplib`. `mplib` is \Metapost\ in form of a library built into \LuaTeX. To use
 it: `\input luamplib.sty`.
 
 \sec Finding files
@@ -211,38 +220,37 @@ different variables are used for different file types. For example the variable
 `TEXINPUTS` determines the location of files for `\input` (most likely `.tex`
 files). These variables can be set from (in order of significance):
 
-\begitems
-* environment variables,
-* `texmf.cnf` files,
-* defaults set at compilation.
-\enditems
+\begitems * environment variables, * `texmf.cnf` files, * defaults set at
+compilation. \enditems
 
-For finding `texmf.cnf` files the same path searching mechanism is used (but
-the location cannot be set from configuration file). This time the variable
-`TEXMFCNF` is used. All found `texmf.cnf`'s are taken into account. Earlier
-assignments in configuration files override later ones. That's why in \MMTeX\
-we compile \LuaTeX\ such that it first looks for `texmf.cnf` first in
-`$XDG_CONFIG_HOME/lltex/texmf.cnf` (where `$XDG_CONFIG_HOME` defaults to
-`~/.config`) for user configuration, then in `/etc/lltex/texmf.cnf`, for system
-wide configuration. The last possible llocation is set to \MMTeX's own config
-file. This order essentially means that the user can always change anything.
-
-The fallback \MMTeX\ `texmf.cnf` resides in `../share/lltex/web2c/texmf.cnf`
-(relative to `luatex` binary). It sets `TEXMFVAR` (for cache files) and
-`OSFONTDIR` (for font files) to locations expected on Unix systems, so
-everything should work out of the box.
+For finding `texmf.cnf` files the same path searching mechanism is used, the
+variable being `TEXMFCNF` (but it cannot be set from configuration file). All
+found `texmf.cnf`'s are taken into account. Earlier assignments in
+configuration files override later ones. That's why in \MMTeX\ we compile
+`kpathsea` such that it first looks for `texmf.cnf` first in
+`$XDG_CONFIG_HOME/mmtex/texmf.cnf` (where `$XDG_CONFIG_HOME` defaults to
+`~/.config`) for user configuration, then in `/etc/mmtex/texmf.cnf`, for system
+wide configuration.
 
 We also use the variable `TEXMFDOTDIR` (which defaults to `.`) as a primary
-search path for every file type. This can be useful for temporary overrides on
-the command line, and was inspired by TeX Live.
+search path for every file type (even for `texmf.cnf` files!). This can be
+useful for temporary overrides on the command line, and was inspired by
+\TeXLive.
 
-All other interesting variables are set so they are complain with the \"\TeX\
-Directory Structure" standard. All roots of TDS trees are expected in the
-`TEXMF` variable, which as always can be overriden by user and defaults to our
-own tree (`_TEXMFMAIN`), user tree `TEXMFUSER` and system tree `TEXMFSYSTEM`.
-The order is important again here. We look first amongst our files because they
-are important for basic functionality and users most likely don't wont to
-override them (and if they do, they can use `TEXMFDOTDIR`).
+Other interesting variables are set to comply with \"\TeX\ Directory Structure"
+or \"XDG Base Directory" standards. All roots of TDS trees are expected in the
+variable `TEXMF`, which defaults to `TEXMFUSER` and `TEXMFSYSTEM` for user and
+system TDS roots. `TEXMFUSER`'s default value is `$XDG_DATA_HOME/{mmtex,texmf}`
+which usually is `~/.local/share/mmtex` and `~/.local/share/texmf`.
+`TEXMFSYSTEM` % fix $ syntax highlting defaults to
+`/usr/local/share/{mmtex,texmf}` and `/usr/share/{mmtex,texmf}`. The user (or
+system administrator) can customize these at any level they want. The order is
+important here, because earlier directories are search first and we want to
+prioritize user files over system files.
+
+\MMTeX\ core files are always available and preferred over any other. Usually
+the user doesn't want to override basic functionality and if they really do,
+they can always use `TEXMFDOTDIR`.
 
 \sec Building \MMTeX
 
@@ -254,7 +262,7 @@ for a Linux distrubution or any other system. `package-builder` script is
 included which along with some metadata uses `build` and can create packages in
 `.deb`, Arch Linux and `tar.gz` formats.
 
-\secc[build] Build instructions
+\secc Build instructions
 
 To build `mmtex` package files into a `pkg` directory, run:
 
@@ -298,7 +306,8 @@ dpkg -i mmtex_<VERSION>_amd64.deb
 
 \secc Any Linux
 
-You can \"install" the tarball to `/usr/local` (or any other prefix) by executing:
+You can \"install" the tarball to `/usr/local` (or any other prefix) by
+executing:
 
 \begtt
 tar -C /usr/local -xf mmtex-<VERSION>.tar.gz

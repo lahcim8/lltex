@@ -6,4 +6,4 @@ MMTeX provides two formats `optex` and texlive's plain `luatex`.
 
 # Documentation
 
-See `doc/lltex-doc.{tex,pdf}` for motivation, details, build and install instructions.
+See `doc/mmtex-doc.{tex,pdf}` for motivation, details, build and install instructions.
