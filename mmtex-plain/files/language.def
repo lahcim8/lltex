@@ -1,5 +1,8 @@
 %% e-TeX V2.1;0-luatex2
 \addlanguage{USenglish}{hyphen}{}{2}{3}
+%\addlanguage{english}{}{}{2}{3}
+%\addlanguage{usenglish}{}{}{2}{3}
+%\addlanguage{american}{}{}{2}{3}
 \addlanguage{afrikaans}{}{}{1}{2}
 \addlanguage{ancientgreek}{}{}{1}{1}
 \addlanguage{arabic}{}{}{2}{3}
@@ -16,13 +19,20 @@
 \addlanguage{danish}{}{}{2}{2}
 \addlanguage{dutch}{}{}{2}{2}
 \addlanguage{ukenglish}{}{}{2}{3}
+\addlanguage{british}{}{}{2}{3}
+\addlanguage{UKenglish}{}{}{2}{3}
 \addlanguage{usenglishmax}{}{}{2}{3}
 \addlanguage{esperanto}{}{}{2}{2}
 \addlanguage{estonian}{}{}{2}{3}
 \addlanguage{ethiopic}{}{}{1}{1}
+\addlanguage{amharic}{}{}{1}{1}
+\addlanguage{geez}{}{}{1}{1}
 \addlanguage{farsi}{}{}{2}{3}
+\addlanguage{persian}{}{}{2}{3}
 \addlanguage{finnish}{}{}{2}{2}
 \addlanguage{french}{}{}{2}{2}
+\addlanguage{patois}{}{}{2}{2}
+\addlanguage{francais}{}{}{2}{2}
 \addlanguage{friulan}{}{}{2}{2}
 \addlanguage{galician}{}{}{2}{2}
 \addlanguage{georgian}{}{}{1}{2}
@@ -31,6 +41,7 @@
 \addlanguage{swissgerman}{}{}{2}{2}
 \addlanguage{monogreek}{}{}{1}{1}
 \addlanguage{greek}{}{}{1}{1}
+\addlanguage{polygreek}{}{}{1}{1}
 \addlanguage{hungarian}{}{}{2}{2}
 \addlanguage{icelandic}{}{}{2}{2}
 \addlanguage{assamese}{}{}{1}{1}
@@ -58,11 +69,14 @@
 \addlanguage{macedonian}{}{}{2}{2}
 \addlanguage{mongolian}{}{}{2}{2}
 \addlanguage{bokmal}{}{}{2}{2}
+\addlanguage{norwegian}{}{}{2}{2}
+\addlanguage{norsk}{}{}{2}{2}
 \addlanguage{nynorsk}{}{}{2}{2}
 \addlanguage{occitan}{}{}{2}{2}
 \addlanguage{piedmontese}{}{}{2}{2}
 \addlanguage{polish}{}{}{2}{2}
 \addlanguage{portuguese}{}{}{2}{3}
+\addlanguage{portuges}{}{}{2}{3}
 \addlanguage{romanian}{}{}{2}{2}
 \addlanguage{romansh}{}{}{2}{2}
 \addlanguage{russian}{}{}{2}{2}
@@ -71,7 +85,9 @@
 \addlanguage{serbianc}{}{}{2}{2}
 \addlanguage{slovak}{}{}{2}{3}
 \addlanguage{slovenian}{}{}{2}{2}
+\addlanguage{slovene}{}{}{2}{2}
 \addlanguage{spanish}{}{}{2}{2}
+\addlanguage{espanol}{}{}{2}{2}
 \addlanguage{swedish}{}{}{2}{2}
 \addlanguage{thai}{}{}{2}{3}
 \addlanguage{turkish}{}{}{2}{2}

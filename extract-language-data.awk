@@ -15,8 +15,17 @@ BEGIN {
 
 	print "%% e-TeX V2.1;0-luatex2" > DEF
 	print "\\addlanguage{USenglish}{hyphen}{}{2}{3}" > DEF
+	# these "synonyms" don't really work with Plain LuaTeX, due to weird
+	# handling between luatex-hyphen and etex.src.
+	print "%\\addlanguage{english}{}{}{2}{3}" > DEF
+	print "%\\addlanguage{usenglish}{}{}{2}{3}" > DEF
+	print "%\\addlanguage{american}{}{}{2}{3}" > DEF
 
-	print "return {" > DATLUA
+	print "return {\n\
+	['USenglish'] = {\n\
+		synonyms = { 'english', 'usenglish', 'american', },\n\
+		special = 'language0',\n\
+	}," > DATLUA
 }
 
 END {
@@ -30,18 +39,20 @@ in_addhyphen {
 
 	if ($1 == "runpattern" || $1 == "execute") {
 		if (!disabled) {
-			printf "\\addlanguage{%s}{}{}{%s}{%s}\n", map["name"], map["lefthyphenmin"], map["righthyphenmin"] > DEF
+			printf "\\addlanguage{%s}{}{}{%s}{%s}\n", lang["name"], lang["lefthyphenmin"], lang["righthyphenmin"] > DEF
 
-			# "synonyms" functionality seems to be broken, because language.dat format
-			# doesn't support it (see function TexLive::TLPOBJ::language_def_lines),
-			# but all language need to by registered by \addlanguage.
-			# Set "synonyms" to dummy value, so luatex-hyphen works.
+			syn_list = " "
+			for (i in synonyms) {
+				syn_list = sprintf("%s'%s', ", syn_list, synonyms[i])
+				printf "\\addlanguage{%s}{}{}{%s}{%s}\n", synonyms[i], lang["lefthyphenmin"], lang["righthyphenmin"] > DEF
+			}
+
 			printf "\
 	['%s'] = {\n\
-		synonyms = {},\n\
+		synonyms = {%s},\n\
 		patterns = '%s',\n\
 		hyphenation = '%s',\n\
-	},\n", map["name"], map["file_patterns"], map["file_exceptions"] > DATLUA
+	},\n", lang["name"], syn_list, lang["file_patterns"], lang["file_exceptions"] > DATLUA
 		}
 
 		in_addhyphen = $1 == "execute"
@@ -51,15 +62,19 @@ in_addhyphen {
 		} else if (($1 == "lefthyphenmin" || $1 == "righthyphenmin") && $2 == "") {
 			# no value provided, keep default value
 		} else {
-			map[$1] = $2
+			lang[$1] = $2
+			if ($3 == "synonyms") {
+				split($4, synonyms, ",")
+			}
 		}
 	}
 }
 
 $1 == "execute" && $2 == "AddHyphen" {
 	in_addhyphen = 1
-	delete map
-	map["lefthyphenmin"] = 2
-	map["righthyphenmin"] = 3
+	delete lang
+	delete synonyms
+	lang["lefthyphenmin"] = 2
+	lang["righthyphenmin"] = 3
 	disabled = 0
 }
