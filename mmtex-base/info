@@ -1,7 +1,7 @@
 pkgver=20200920
-pkgdesc='OpTeX format for MMTeX'
+pkgdesc='Base files for MMTeX'
 pkgurl='https://gitlab.com/vlasakm/mmtex'
 arch_arch=any
 debian_arch=all
-arch_depends="mmtex-base"
-debian_depends="mmtex-base"
+arch_depends="mmtex-bin"
+debian_depends="mmtex-bin"

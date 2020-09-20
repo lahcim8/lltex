@@ -7,13 +7,11 @@
 
 # Usage: awk -f extract-language-data.awk tex-hyphen/TL/tlpkg/tlpsrc/*.tlpsrc
 
-# Michal Vlasák, 2020, public domain
-
 BEGIN {
 	FS = "[= ]"
 
-	DEF = "language.def"
-	DATLUA = "language.dat.lua"
+	DEF = "mmtex-plain/files/language.def"
+	DATLUA = "mmtex-base/files/language.dat.lua"
 
 	print "%% e-TeX V2.1;0-luatex2" > DEF
 	print "\\addlanguage{USenglish}{hyphen}{}{2}{3}" > DEF

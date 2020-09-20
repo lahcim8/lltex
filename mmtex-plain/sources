@@ -1,0 +1,12 @@
+http://mirrors.ctan.org/language/hyph-utf8/tex/luatex/hyph-utf8/etex.src # luatex's etex.src
+http://mirrors.ctan.org/obsolete/systems/e-tex/v2/src/etexdefs.lib # etexdefs.lib
+
+http://mirrors.ctan.org/macros/generic/tex-ini-files.zip # luatex.ini, etc
+http://mirrors.ctan.org/systems/knuth/dist/lib.zip # plain.tex, hyphen.tex
+http://mirrors.ctan.org/fonts/amsfonts.zip # computer modern .pfb files
+http://mirrors.ctan.org/fonts/cm/tfm.zip # computer modern .tfm files
+http://mirrors.ctan.org/fonts/manual.zip # manfnt font
+
+pdftex.map # mapping of used type1 fonts
+luatexiniconfig.tex # config for plain luatex format
+language.def # language list

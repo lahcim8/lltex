@@ -1,0 +1,6 @@
+svn+https://serveur-svn.lri.fr/svn/modhel/luatex/tags/1.12.0/source/texk/web2c # luatex + mplib + web2c
+svn+https://serveur-svn.lri.fr/svn/modhel/luatex/tags/1.12.0/source/texk/kpathsea # kpathsea (for luatex and ctangle)
+svn+https://serveur-svn.lri.fr/svn/modhel/luatex/tags/1.12.0/source/libs/lua53/lua53-src/ # lua (for luatex)
+
+include # headers for kpathsea and web2c
+kpathsea.patch # patch for "extending" kpathsea

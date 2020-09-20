@@ -1,0 +1,52 @@
+#!/bin/sh
+
+set -e
+
+pkgdir=$1
+pkgname=$2
+# not used
+#pkgver=$3
+
+srcdir=$(readlink -f .)
+
+install() {
+	command install -Dm644 "$@"
+}
+
+patch() {
+	# don't complain if patch is already applied (by previous build)
+	command patch -N -p1 "$@" || true
+}
+
+texmf="$pkgdir/usr/share/$pkgname"
+
+# patch luaotfload
+patch -i kpathsea.patch
+
+# generate docstrip.tex
+yes | TEXMFDOTDIR=.:base luatex -ini docstrip.ins # create docstrip.tex
+
+# generate ltluatex.{lua,tex}
+yes | env TEXMFDOTDIR=.:base luatex -ini format.ins
+
+# generate luamplib.{sty.lua}
+TEXMFDOTDIR=.:luamplib luatex -ini '\catcode`\{=1 \catcode`\}=2 \let\obeyspaces\relax \input luamplib.dtx'
+
+# generate some lualibs files
+TEXMFDOTDIR=.:lualibs luatex -ini '\catcode`\{=1 \catcode`\}=2 \let\obeyspaces\relax \input lualibs.dtx'
+
+# install luatex packages
+install hyph-utf8/tex/generic/hyph-utf8/patterns/txt/* -t "$texmf/tex/hyph-utf8"
+(cd unicode-data; install CaseFolding.txt load-unicode-data.tex PropList.txt ScriptExtensions.txt Scripts.txt UnicodeData.txt -t "$texmf/tex/unicode-data")
+install lualibs*.lua lualibs/lualibs*.lua -t "$texmf/tex/lualibs"
+install ltluatex.lua ltluatex.tex -t "$texmf/tex/latex"
+install luaotfload/*.lua luaotfload/*.sty -t "$texmf/tex/luaotfload"
+install luamplib.lua luamplib.sty -t "$texmf/tex/luamplib"
+install base/*.mp -t "$texmf/metapost"
+install hyph-utf8/tex/luatex/hyph-utf8/luatex-hyphen.lua -t "$texmf/tex/hyph-utf8"
+
+# language.dat.lua containts language informationa and is needed at run time
+install language.dat.lua -t "$texmf/tex/$pkgname"
+
+# create ls-R database
+(cd "$texmf" && ls -LAR ./ > ls-R)

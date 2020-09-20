@@ -9,14 +9,6 @@ pkgname=$2
 
 srcdir=$(readlink -f .)
 
-install() {
-	command install -Dm644 "$@"
-}
-
-install_exec() {
-	command install -Dm755 "$@"
-}
-
 patch() {
 	# don't complain if patch is already applied (by previous build)
 	command patch -N -p1 "$@" || true
@@ -25,9 +17,8 @@ patch() {
 # patch missing include in web2c
 sed -i '6i #include <w2c/config.h>' web2c/lib/lib.h
 
-# patch kpathsea and luaotfload, patch -i luaotfload.patch || true
+# patch kpathsea
 patch -i kpathsea.patch
-patch -i luaotfload.patch
 
 cd kpathsea
 
@@ -408,66 +399,4 @@ $CC -o luatex \
 
 strip --strip-all luatex
 
-cd "$srcdir"
-
-texmf="$pkgdir/usr/share/$pkgname"
-
-# first install luatex binary as we will need it later and add it to PATH
-install_exec web2c/luatexdir/luatex "$pkgdir/usr/bin/luatex"
-PATH="$pkgdir/usr/bin:$PATH"
-
-# generate docstrip.tex
-yes | TEXMFDOTDIR=.:base luatex -ini docstrip.ins # create docstrip.tex
-
-# generate ltluatex.{lua,tex}
-yes | env TEXMFDOTDIR=.:base luatex -ini format.ins
-
-# generate luamplib.{sty.lua}
-TEXMFDOTDIR=.:luamplib luatex -ini '\catcode`\{=1 \catcode`\}=2 \let\obeyspaces\relax \input luamplib.dtx'
-
-# generate some lualibs files
-TEXMFDOTDIR=.:lualibs luatex -ini '\catcode`\{=1 \catcode`\}=2 \let\obeyspaces\relax \input lualibs.dtx'
-
-# install luatex packages
-install tex-hyphen/hyph-utf8/tex/generic/hyph-utf8/patterns/txt/* -t "$texmf/tex/hyph-utf8"
-(cd unicode-data; install CaseFolding.txt load-unicode-data.tex PropList.txt ScriptExtensions.txt Scripts.txt UnicodeData.txt -t "$texmf/tex/unicode-data")
-install lualibs*.lua lualibs/lualibs*.lua -t "$texmf/tex/lualibs"
-install ltluatex.lua ltluatex.tex -t "$texmf/tex/latex"
-install luaotfload/*.lua luaotfload/*.sty -t "$texmf/tex/luaotfload"
-install luamplib.lua luamplib.sty -t "$texmf/tex/luamplib"
-install base/*.mp -t "$texmf/metapost"
-install tex-hyphen/hyph-utf8/tex/luatex/hyph-utf8/luatex-hyphen.lua -t "$texmf/tex/hyph-utf8"
-
-# install pdftex.map
-install pdftex.map -t "$texmf/fonts/map"
-
-# extract language information to language.def and language.dat.lua
-awk -f extract-language-data.awk tex-hyphen/TL/tlpkg/tlpsrc/*.tlpsrc
-# language.dat.lua is needed at run time, language.def is needed only by
-# etex.src at luatex plain format creation
-install language.dat.lua -t "$texmf/tex/$pkgname"
-
-# there are two manfnt.tfm files, one from cm-tfm package and one from manual package
-# use the one from manual package
-rm -f tfm/manfnt.tfm
-# delete comments and empty lines from .map file, prepare .tfm, .pfb file names
-sed -e 's/%.*//' -e '/^$/d' pdftex.map > pdftex.map.tmp
-awk '{print "/" $1 ".tfm$"}' pdftex.map.tmp > tfm_files
-awk -F'[[:blank:]]|<' '{print "/" $NF "$"}' pdftex.map.tmp > pfb_files
-# find all possible font files
-find . -type f -regex '.*\.\(tfm\|pfb\)$' > available_files
-# install only needed font files
-grep -f tfm_files available_files | xargs install -Dm644 -t "$texmf/fonts/tfm"
-grep -f pfb_files available_files | xargs install -Dm644 -t "$texmf/fonts/type1"
-
-# need etex.src from depths of hyph-utf8
-cp tex-hyphen/hyph-utf8/tex/luatex/hyph-utf8/etex.src .
-
-# run iniluatex to create format file
-TEXMF=$texmf TEXMFDOTDIR=".:tex-ini-files:lib" luatex -ini tex-ini-files/luatex.ini
-
-# install format file
-install luatex.fmt -t "$texmf/web2c"
-
-# create ls-R database
-(cd "$texmf" && ls -LAR ./ > ls-R)
+install -Dm755 luatex "$pkgdir/usr/bin/luatex"

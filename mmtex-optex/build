@@ -37,6 +37,10 @@ install cm-super/dvips/cm-super-t1.enc -t "$texmf/fonts/enc"
 # generate rsfs*.tfm files
 TEXMFDOTDIR=".:rsfs" luatex --luaonly mfplain.lua rsfs5 rsfs7 rsfs10
 
+# delete comments and empty lines from .map file, prepare .tfm, .pfb file names
+sed -e 's/%.*//' -e '/^$/d' pdftex.map > pdftex.map.tmp
+awk '{print "/" $1 ".tfm$"}' pdftex.map.tmp > tfm_files
+awk -F'[[:blank:]]|<' '{print "/" $NF "$"}' pdftex.map.tmp > pfb_files
 # find all possible font files
 find . -type f -regex '.*\.\(tfm\|pfb\)$' > available_files
 # install only needed font files

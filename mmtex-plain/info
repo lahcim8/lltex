@@ -1,5 +1,5 @@
 pkgver=20200920
-pkgdesc='OpTeX format for MMTeX'
+pkgdesc='Plain TeX format for MMTeX'
 pkgurl='https://gitlab.com/vlasakm/mmtex'
 arch_arch=any
 debian_arch=all
