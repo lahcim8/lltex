@@ -3,5 +3,5 @@ pkgdesc='LuaTeX binary for MMTeX'
 pkgurl='https://gitlab.com/vlasakm/mmtex'
 arch_arch=x86_64
 debian_arch=amd64
-arch_depends=""
-debian_depends=""
+arch_depends="zziplib libpng zlib"
+debian_depends="libzzip-0-13, libpng16-16, zlib1g"

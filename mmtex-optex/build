@@ -23,6 +23,8 @@ docstrip_bootstrap() {
 }
 
 texmf="$pkgdir/usr/share/$pkgname"
+PATH="$pkgdir/../mmtex-bin/usr/bin:$PATH"
+export TEXMF="$texmf:$pkgdir/../mmtex-base/usr/share/mmtex-base"
 
 # generate lipsum.ltd.tex (needs docstrip and l3docstrip)
 docstrip_bootstrap docstrip initex,program,stats

@@ -18,6 +18,8 @@ patch() {
 	command patch -N -p1 "$@" || true
 }
 
+PATH="$pkgdir/../mmtex-bin/usr/bin/:$PATH"
+
 texmf="$pkgdir/usr/share/$pkgname"
 
 # patch luaotfload

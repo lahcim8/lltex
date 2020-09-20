@@ -7,7 +7,7 @@ set -e
 # Dependencies for making .deb package: dpkg-deb
 # Dependencies for making .tar package: fakeroot
 
-packager="Michal Vlasák <lahcim8@gmail.com>"
+: ${packager:="Michal Vlasák <lahcim8@gmail.com>"}
 
 get_package_sources() (
 	echo "Getting sources.."
@@ -55,7 +55,18 @@ get_package_sources() (
 	done < "$basedir/sources"
 )
 
-build_package() (
+build_package() {
+	if [ ! -d "$pkgname" ]; then
+		echo "Invalid package name '$pkgname' - no such directory" >&2
+		exit 1
+	fi
+
+	basedir=$(readlink -f "$pkgname")
+	pkgdir=$(readlink -fm "pkg/$pkgname")
+	srcdir=$(readlink -fm src/$pkgname)
+
+	. "$basedir/info"
+
 	get_package_sources
 
 	# export compilation variables, fallback to some defaults
@@ -74,12 +85,14 @@ build_package() (
 	mkdir -p "$pkgdir"
 
 	echo "Running build script.."
-	cd "$srcdir"
-	"$basedir/build" "$pkgdir" "$pkgname" "$pkgver"
-)
+	(
+		cd "$srcdir"
+		"$basedir/build" "$pkgdir" "$pkgname" "$pkgver"
+	)
+}
 
-debian_package() {
-	echo "Creating Debian package."
+deb_package() {
+	echo "Creating .deb package."
 
 	# uses `dpkg-deb` to create .deb from a pkg directory
 
@@ -100,7 +113,7 @@ debian_package() {
 }
 
 arch_package() {
-	echo "Creating Arch linux package."
+	echo "Creating Arch Linux package."
 
 	# uses `makepkg`'s functions to create .pkg.tar.* from a pkg directory
 
@@ -138,52 +151,37 @@ tar_package() {
 	fakeroot -- tar -caf "${pkgname}-${pkgver}.tar.gz" -C "$pkgdir/usr" .
 }
 
-if [ $# -lt 2 ]; then
+if [ $# -lt 1 ]; then
 	echo "Missing arguments" >&2
 	exit 1
 fi
 
 cmd=$1
-pkgname=$2
-shift 2
-
-if [ ! -d "$pkgname" ]; then
-	echo "Invalid package name '$pkgname' - no such directory" >&2
-	exit 1
-fi
-
-basedir=$(readlink -f "$pkgname")
-pkgdir=$(readlink -fm "pkg/$pkgname")
-srcdir=$(readlink -fm src/$pkgname)
-
-. "$basedir/info"
-
+shift 1
 case "$cmd" in
 build)
-	build_package
+	for pkgname in "$@"; do
+		build_package
+	done
 ;;
 package)
-	if [ $# -lt 1 ]; then
-		exit 0
-	fi
-	build_package
+	deb_pkg=0 arch_pkg=0 tar_pkg=0
 	for arg in "$@"; do
 		case "$arg" in
-		arch) arch_package ;;
-		debian) debian_package ;;
-		tar) tar_package ;;
-		all)
-			arch_package
-			debian_package
-			tar_package
-		;;
+		--deb)  deb_pkg=1  ;;
+		--arch) arch_pkg=1 ;;
+		--tar)  tar_pkg=1  ;;
+		--all)  deb_pkg=1 arch_pkg=1 tar_pkg=1 ;;
 		*)
-			echo "Invalid package format '$arg'" >&2
-			exit 1
+			pkgname=$arg
+			build_package
+			[ $deb_pkg -eq 1 ] && deb_package
+			[ $arch_pkg -eq 1 ] && arch_package
+			[ $tar_pkg -eq 1 ] && tar_package
 		esac
 	done
 ;;
 *)
 	echo "Invalid command '$cmd'" >&2
 	exit 1
-esac	
+esac

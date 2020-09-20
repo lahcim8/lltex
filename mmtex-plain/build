@@ -13,7 +13,9 @@ install() {
 	command install -Dm644 "$@"
 }
 
+PATH="$pkgdir/../mmtex-bin/usr/bin:$PATH"
 texmf="$pkgdir/usr/share/mmtex-luatex"
+export TEXMF="$texmf:$pkgdir/../mmtex-base/usr/share/mmtex-base"
 
 # install pdftex.map
 install pdftex.map -t "$texmf/fonts/map"
@@ -32,7 +34,7 @@ grep -f tfm_files available_files | xargs install -Dm644 -t "$texmf/fonts/tfm"
 grep -f pfb_files available_files | xargs install -Dm644 -t "$texmf/fonts/type1"
 
 # run iniluatex to create format file
-TEXMF=$texmf TEXMFDOTDIR=".:tex-ini-files:lib" luatex -ini tex-ini-files/luatex.ini
+TEXMFDOTDIR=".:tex-ini-files:lib" luatex -ini tex-ini-files/luatex.ini
 
 # install format file
 install luatex.fmt -t "$texmf/web2c"
